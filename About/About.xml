@@ -2,7 +2,7 @@
 <ModMetaData>
     <name>Simple Leadership</name>
     <author>pb3n, Taranchuk</author>
-    <packageId>pb3n,Taranchuk.SimpleLeadership</packageId>
+    <packageId>pb3n.SimpleLeadership</packageId>
     <description></description>
     <supportedVersions>
         <li>1.6</li>

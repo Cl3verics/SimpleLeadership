@@ -40,27 +40,21 @@ namespace SimpleLeadership
             }
 
             Pawn baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(settlement);
-            if (baseLeader == null)
-                return;
-                
-            Pawn pawnToReplace = pawnList
-                .Where(p => p != factionLeader && p.kindDef.combatPower >= baseLeader.kindDef.combatPower * 0.8f)
-                .OrderByDescending(p => p.kindDef.combatPower)
-                .FirstOrDefault();
+            if (baseLeader != null && !baseLeader.Dead && !baseLeader.Spawned && !pawnList.Contains(baseLeader))
+            {
+                var tracker = WorldComponent_LeaderTracker.Instance;
+                var factionSettlements = Find.WorldObjects.Settlements.Where(s => s.Faction == parms.faction).ToList();
+                int controlledBases = factionSettlements.Count(s => tracker.GetBaseLeader(s) == baseLeader);
 
-            if (pawnToReplace != null)
-            {
-                int index = pawnList.IndexOf(pawnToReplace);
-                if (index >= 0)
+                if (controlledBases > 0)
                 {
-                    pawnList[index] = baseLeader;
-                    __result = pawnList;
+                    float spawnChance = 1f / controlledBases;
+                    if (Rand.Chance(spawnChance))
+                    {
+                        pawnList.Add(baseLeader);
+                        __result = pawnList;
+                    }
                 }
-            }
-            else if (pawnList.Count > 0)
-            {
-                pawnList.Add(baseLeader);
-                __result = pawnList;
             }
         }
     }

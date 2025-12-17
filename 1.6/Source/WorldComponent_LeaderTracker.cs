@@ -4,6 +4,7 @@ using System.Linq;
 using Verse;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
 
 namespace SimpleLeadership
 {
@@ -26,17 +27,16 @@ namespace SimpleLeadership
         public override void FinalizeInit(bool fromLoad)
         {
             base.FinalizeInit(fromLoad);
-            if (!initialized)
-            {
-                InitializeLeaders();
-                initialized = true;
-            }
         }
 
         public override void WorldComponentTick()
         {
             base.WorldComponentTick();
-
+            if (!initialized)
+            {
+                InitializeLeaders();
+                initialized = true;
+            }
             for (int i = activeEvents.Count - 1; i >= 0; i--)
             {
                 if (!activeEvents[i].IsActive())
@@ -62,6 +62,7 @@ namespace SimpleLeadership
 
         private void InitializeLeaders()
         {
+            float basesPerLeader = 5f;
             foreach (Faction faction in Find.FactionManager.AllFactionsVisible)
             {
                 if (IsValidFactionForLeaders(faction))
@@ -72,23 +73,48 @@ namespace SimpleLeadership
                         leadershipData[faction] = data;
                     }
 
-                    foreach (Settlement settlement in Find.WorldObjects.Settlements)
+                    var factionSettlements = Find.WorldObjects.Settlements.Where(s => s.Faction == faction).ToList();
+
+                    var leaders = data.settlementLeaders
+                        .Where(kvp => kvp.Key?.Faction == faction && kvp.Value != null && !kvp.Value.Dead)
+                        .Select(kvp => kvp.Value)
+                        .Distinct()
+                        .ToList();
+
+                    int requiredLeaders = 0;
+                    if (factionSettlements.Any())
                     {
-                        if (settlement.Faction == faction)
-                        {
-                            if (!data.settlementLeaders.ContainsKey(settlement) || data.settlementLeaders[settlement] == null)
-                            {
-                                Pawn newLeader = GenerateBaseLeader(faction);
-                                data.settlementLeaders[settlement] = newLeader;
-                            }
-                        }
+                        requiredLeaders = Mathf.CeilToInt(factionSettlements.Count / basesPerLeader);
+                        if (requiredLeaders == 0) requiredLeaders = 1;
                     }
 
-                    if (faction.leader == null || faction.leader.Dead)
+                    while (leaders.Count < requiredLeaders)
                     {
-                        if (data.settlementLeaders.Values.Any())
+                        var newLeader = GenerateBaseLeader(faction);
+                        leaders.Add(newLeader);
+                    }
+                    while (leaders.Count > requiredLeaders)
+                    {
+                        var removedLeader = leaders.Last();
+                        leaders.RemoveAt(leaders.Count - 1);
+                    }
+
+                    var keysToRemove = data.settlementLeaders.Keys.Where(s => s == null || s.Faction == faction).ToList();
+                    foreach (var key in keysToRemove)
+                    {
+                        data.settlementLeaders.Remove(key);
+                    }
+
+                    if (leaders.Any())
+                    {
+                        for (int i = 0; i < factionSettlements.Count; i++)
                         {
-                            faction.leader = data.settlementLeaders.Values.RandomElement();
+                            var settlement = factionSettlements[i];
+                            int leaderIndex = Mathf.FloorToInt(i / basesPerLeader);
+                            if (leaderIndex < leaders.Count)
+                            {
+                                data.settlementLeaders[settlement] = leaders[leaderIndex];
+                            }
                         }
                     }
                 }
@@ -155,7 +181,7 @@ namespace SimpleLeadership
             List<Pawn> leaders = [];
             if (leadershipData.TryGetValue(faction, out var data))
             {
-                leaders.AddRange(data.settlementLeaders.Values);
+                leaders.AddRange(data.settlementLeaders.Values.Distinct());
             }
             return leaders;
         }

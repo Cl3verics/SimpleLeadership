@@ -9,11 +9,12 @@
   <SL_PowerVoidEnded>The power void in {0} has ended</SL_PowerVoidEnded>
   <SL_RaidOriginInfo>This raid originated from Base '{0}' of faction {1}.</SL_RaidOriginInfo>
   <SL_RaidOriginLeaderInfo>If you capture or kill their leader, '{0}', this base will be weakened.</SL_RaidOriginLeaderInfo>
-  <SL_SiteOwnershipInfo>Base '{0}' of faction {1} has claimed ownership of this site.</SL_SiteOwnershipInfo>
+  <SL_SiteOwnershipInfo>Base '{0}' has claimed ownership of this site.</SL_SiteOwnershipInfo>
   <SL_JumpToBase>Jump to Base</SL_JumpToBase>
   <SL_JumpToBaseDesc>Jump to the base that owns this site.</SL_JumpToBaseDesc>
   <SL_Location>Location:</SL_Location>
   <SL_NotAvailable>Not Available</SL_NotAvailable>
   <SL_CurrentEvents>Current Events</SL_CurrentEvents>
   <SL_None>None</SL_None>
+  <SL_LeaderName>Name:</SL_LeaderName>
 </LanguageData>

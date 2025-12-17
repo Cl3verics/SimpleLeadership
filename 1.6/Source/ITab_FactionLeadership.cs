@@ -56,7 +56,7 @@ namespace SimpleLeadership
             DrawLeadershipColumn(leftColumnRect, "SL_FactionLeadership", factionLeader, factionLeaderLocation, faction, null, leaderTracker, true);
 
             Pawn baseLeader = leaderTracker.GetBaseLeader(selectedSettlement);
-            string baseLeaderLocation = selectedSettlement.LabelCap;
+            string baseLeaderLocation = GetLeaderLocationText(baseLeader);
             DrawLeadershipColumn(rightColumnRect, "SL_BaseLeadership", baseLeader, baseLeaderLocation, selectedSettlement.Faction, selectedSettlement, leaderTracker, false);
 
             Widgets.DrawBoxSolid(new Rect(mainRect.center.x, mainRect.y, 1f, mainRect.height), Color.grey);
@@ -76,8 +76,9 @@ namespace SimpleLeadership
             DrawLeaderInfo(new Rect(rect.x, curY, rect.width, PortraitSize), leader);
             curY += PortraitSize + SectionSpacing;
 
+            string leaderName = leader != null ? leader.Name.ToStringFull : "SL_NotAvailable".Translate().ToString();
+            DrawInfoRow(ref curY, rect, "SL_LeaderName".Translate().ToString().ToUpper(), leaderName);
             DrawInfoRow(ref curY, rect, "SL_Location".Translate().ToString().ToUpper(), locationText);
-
             Widgets.DrawLineHorizontal(isLeft ? 0f : size.x / 2f, curY, size.x / 2f, Color.gray);
             curY += SectionSpacing;
 
@@ -102,6 +103,8 @@ namespace SimpleLeadership
             if (leader != null)
             {
                 GUI.DrawTexture(portraitRect, PortraitsCache.Get(leader, new Vector2(PortraitSize, PortraitSize), Rot4.South));
+                Widgets.InfoCardButton(portraitRect.xMax, portraitRect.yMax - 24f, leader);
+                TooltipHandler.TipRegion(portraitRect, leader.Name.ToStringFull);
             }
             else
             {

@@ -25,7 +25,7 @@ namespace SimpleLeadership
         {
             if (owningSettlement != null)
             {
-                return "SL_SiteOwnershipInfo".Translate(owningSettlement.Label, owningSettlement.Faction.Name);
+                return "SL_SiteOwnershipInfo".Translate(owningSettlement.Label);
             }
             return null;
         }
