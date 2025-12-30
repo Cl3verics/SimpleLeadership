@@ -28,12 +28,13 @@ namespace SimpleLeadership
 
         public WITab_FactionLeadership()
         {
-            size = new Vector2(520f, 300f);
             labelKey = "SL_Leaders";
         }
 
         public override void FillTab()
         {
+            size = new Vector2(520f, 330f);
+
             Rect mainRect = new Rect(0f, 0f, size.x, size.y);
             Widgets.DrawWindowBackground(mainRect);
 
@@ -79,6 +80,13 @@ namespace SimpleLeadership
             string leaderName = leader != null ? leader.Name.ToStringFull : "SL_NotAvailable".Translate().ToString();
             DrawInfoRow(ref curY, rect, "SL_LeaderName".Translate().ToString().ToUpper(), leaderName);
             DrawInfoRow(ref curY, rect, "SL_Location".Translate().ToString().ToUpper(), locationText);
+
+            if (leader != null && !leader.Dead)
+            {
+                float spawnChance = CalculateSpawnChance(leader, faction, settlement, leaderTracker);
+                DrawSpawnChance(ref curY, rect, spawnChance);
+            }
+
             Widgets.DrawLineHorizontal(isLeft ? 0f : size.x / 2f, curY, size.x / 2f, Color.gray);
             curY += SectionSpacing;
 
@@ -122,6 +130,75 @@ namespace SimpleLeadership
             curY += InfoRowHeight;
         }
 
+        private float CalculateSpawnChance(Pawn leader, Faction faction, Settlement settlement, WorldComponent_LeaderTracker leaderTracker)
+        {
+            if (leader == null || leader.Dead || leader.Spawned)
+                return 0f;
+
+            int settlementCount = Find.WorldObjects.Settlements
+                .Where(s => s.Faction == faction)
+                .Count();
+
+            float spawnChance = 0f;
+
+            if (leader == faction.leader)
+            {
+                if (settlementCount > 0)
+                {
+                    spawnChance = 1f / (float)settlementCount;
+                    if (settlement != null && settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
+                    {
+                        spawnChance += 0.3f;
+                    }
+                }
+            }
+            else
+            {
+                var factionSettlements = Find.WorldObjects.Settlements.Where(s => s.Faction == faction).ToList();
+                int controlledBases = factionSettlements.Count(s => leaderTracker.GetBaseLeader(s) == leader);
+
+                if (controlledBases > 0)
+                {
+                    spawnChance = 1f / controlledBases;
+                    if (settlement != null && settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
+                    {
+                        spawnChance += 0.3f;
+                    }
+                }
+            }
+
+            return spawnChance;
+        }
+
+        private void DrawSpawnChance(ref float curY, Rect container, float spawnChance)
+        {
+            Rect rowRect = new Rect(container.x, curY, container.width, InfoRowHeight);
+            Widgets.Label(rowRect, "SL_SpawnChance".Translate().ToString().ToUpper());
+
+            Text.Anchor = TextAnchor.MiddleRight;
+            Color originalColor = GUI.color;
+            float chancePercent = spawnChance * 100f;
+            string chanceText = chancePercent.ToString("0") + "%";
+
+            if (chancePercent < 40f)
+            {
+                GUI.color = Color.red;
+            }
+            else if (chancePercent < 70f)
+            {
+                GUI.color = Color.yellow;
+            }
+            else
+            {
+                GUI.color = Color.green;
+            }
+
+            Widgets.Label(rowRect, chanceText);
+            GUI.color = originalColor;
+            Text.Anchor = TextAnchor.UpperLeft;
+            curY += InfoRowHeight;
+        }
+
         private void DrawEvents(Rect rect, Faction faction, Settlement settlement, WorldComponent_LeaderTracker leaderTracker)
         {
             var events = settlement != null ? settlement.GetActiveEvents<PowerEventBase>() : faction.GetActiveEvents<PowerEventBase>();
@@ -131,15 +208,23 @@ namespace SimpleLeadership
                 float currentY = rect.y;
                 foreach (var powerEvent in events)
                 {
-                    Rect eventRect = new Rect(rect.x, currentY, rect.width, EventButtonHeight);
+                    float iconSize = 30f;
+                    float padding = 5f;
+                    float textWidth = rect.width - iconSize - (padding * 3);
+                    
+                    Text.Font = GameFont.Small;
+                    float textHeight = Text.CalcHeight(powerEvent.def.LabelCap, textWidth);
+                    float eventHeight = Mathf.Max(iconSize + (padding * 2), textHeight + (padding * 2));
+
+                    Rect eventRect = new Rect(rect.x, currentY, rect.width, eventHeight);
                     Widgets.DrawBoxSolid(eventRect, new Color(0.15f, 0.15f, 0.15f));
                     Widgets.DrawHighlightIfMouseover(eventRect);
 
-                    Rect iconRect = new Rect(eventRect.x + 5f, eventRect.y, eventRect.height, eventRect.height).ContractedBy(5f);
+                    Rect iconRect = new Rect(eventRect.x + padding, eventRect.y + padding, iconSize, iconSize);
                     GUI.DrawTexture(iconRect, powerEvent.def.Icon);
 
                     Text.Anchor = TextAnchor.MiddleLeft;
-                    Rect textRect = new Rect(iconRect.xMax + 10f, eventRect.y, eventRect.width - iconRect.width - 20f, eventRect.height);
+                    Rect textRect = new Rect(iconRect.xMax + padding, eventRect.y + padding, textWidth, eventHeight - (padding * 2));
                     Widgets.Label(textRect, powerEvent.def.LabelCap);
                     Text.Anchor = TextAnchor.UpperLeft;
 
@@ -147,7 +232,7 @@ namespace SimpleLeadership
                     {
                         DrawPowerEventWindow(powerEvent);
                     }
-                    currentY += EventButtonHeight + 5f;
+                    currentY += eventHeight + 5f;
                 }
             }
             else

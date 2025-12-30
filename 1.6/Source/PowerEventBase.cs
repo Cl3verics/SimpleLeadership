@@ -1,4 +1,3 @@
-using System;
 using Verse;
 using RimWorld;
 
@@ -29,10 +28,33 @@ namespace SimpleLeadership
             return Find.TickManager.TicksGame < endTick;
         }
 
-        public virtual void OnStart() { }
+        public virtual void OnStart()
+        {
+            if (ShouldGiveMessage() && !string.IsNullOrEmpty(def.startMessage))
+            {
+                string message = GetFormattedMessage(def.startMessage);
+                Messages.Message(message, MessageTypeDefOf.NeutralEvent);
+            }
+        }
 
+        public virtual void OnResolve()
+        {
+            if (ShouldGiveMessage() && !string.IsNullOrEmpty(def.endMessage))
+            {
+                string message = GetFormattedMessage(def.endMessage);
+                Messages.Message(message, MessageTypeDefOf.NeutralEvent);
+            }
+        }
 
-        public abstract void OnResolve();
+        protected virtual string GetFormattedMessage(string message)
+        {
+            return message;
+        }
+
+        public virtual bool ShouldGiveMessage()
+        {
+            return true;
+        }
 
         public abstract bool IsDuplicate(PowerEventBase other);
 

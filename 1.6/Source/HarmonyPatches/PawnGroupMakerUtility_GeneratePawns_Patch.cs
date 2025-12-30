@@ -14,10 +14,14 @@ namespace SimpleLeadership
         {
             if (parms == null || parms.faction == null)
                 return;
-            Settlement settlement = Find.WorldObjects.Settlements
-            .Where(s => s.Tile == parms.tile && s.Faction == parms.faction)
-            .FirstOrDefault();
-            if (settlement is null) return;
+            Settlement settlement = RaidContext.CurrentOrigin;
+            if (settlement == null || settlement.Faction != parms.faction)
+            {
+                settlement = Find.WorldObjects.Settlements
+                    .Where(s => s.Faction == parms.faction)
+                    .MinBy(s => Find.WorldGrid.ApproxDistanceInTiles(parms.tile, s.Tile));
+            }
+            if (settlement == null) return;
             
             List<Pawn> pawnList = __result.ToList();
 
@@ -31,6 +35,10 @@ namespace SimpleLeadership
                 if (settlementCount > 0)
                 {
                     float spawnChance = 1f / settlementCount;
+                    if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
+                    {
+                        spawnChance += 0.3f;
+                    }
                     if (Rand.Chance(spawnChance))
                     {
                         pawnList.Add(factionLeader);

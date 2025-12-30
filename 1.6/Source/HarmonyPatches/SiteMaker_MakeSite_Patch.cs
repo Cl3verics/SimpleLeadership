@@ -36,6 +36,19 @@ namespace SimpleLeadership
                     }
                     siteParts = modifiedSiteParts;
                 }
+                else if (nearestSettlement.IsInPowerEvent(PowerEventDefOf.SL_Fortifying))
+                {
+                    List<SitePartDefWithParams> modifiedSiteParts = [];
+                    foreach (var part in siteParts)
+                    {
+                        if (part.parms != null && part.parms.threatPoints > 0)
+                        {
+                            part.parms.threatPoints *= 2f;
+                        }
+                        modifiedSiteParts.Add(part);
+                    }
+                    siteParts = modifiedSiteParts;
+                }
             }
         }
 

@@ -3,10 +3,6 @@
   <SL_Leaders>Leaders</SL_Leaders>
   <SL_FactionLeadership>Faction Leadership</SL_FactionLeadership>
   <SL_BaseLeadership>Base Leadership</SL_BaseLeadership>
-  <SL_PowerStruggleStarted>Power struggle has begun at {0}</SL_PowerStruggleStarted>
-  <SL_PowerStruggleEnded>The power struggle at {0} has ended</SL_PowerStruggleEnded>
-  <SL_PowerVoidStarted>Power void has begun in {0}</SL_PowerVoidStarted>
-  <SL_PowerVoidEnded>The power void in {0} has ended</SL_PowerVoidEnded>
   <SL_RaidOriginInfo>This raid originated from Base '{0}' of faction {1}.</SL_RaidOriginInfo>
   <SL_RaidOriginLeaderInfo>If you capture or kill their leader, '{0}', this base will be weakened.</SL_RaidOriginLeaderInfo>
   <SL_SiteOwnershipInfo>Base '{0}' has claimed ownership of this site.</SL_SiteOwnershipInfo>
@@ -17,4 +13,6 @@
   <SL_CurrentEvents>Current Events</SL_CurrentEvents>
   <SL_None>None</SL_None>
   <SL_LeaderName>Name:</SL_LeaderName>
+  <SL_SpawnChance>Spawn Chance:</SL_SpawnChance>
+  <SL_VigilantBonus>Vigilant ({0})</SL_VigilantBonus>
 </LanguageData>

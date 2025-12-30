@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using RimWorld;
+using RimWorld.Planet;
 
 namespace SimpleLeadership
 {
@@ -29,7 +29,12 @@ namespace SimpleLeadership
             {
                 faction.leader = null;
             }
-            Messages.Message("SL_PowerVoidStarted".Translate(faction.Name), MessageTypeDefOf.NegativeEvent);
+            base.OnStart();
+        }
+
+        protected override string GetFormattedMessage(string message)
+        {
+            return string.Format(message, faction.Name);
         }
 
         public override void OnResolve()
@@ -39,9 +44,22 @@ namespace SimpleLeadership
             
             if (candidates.Any())
             {
-                faction.leader = candidates.RandomElement();
+                Pawn newLeader = candidates.RandomElement();
+                faction.leader = newLeader;
+
+                Settlement oldSettlement = WorldComponent_LeaderTracker.Instance.GetSettlementOfBaseLeader(newLeader);
+                if (oldSettlement != null)
+                {
+                    var leaderTracker = WorldComponent_LeaderTracker.Instance;
+                    var data = leaderTracker.GetLeadershipDataFor(faction);
+                    if (data != null)
+                    {
+                        data.settlementLeaders.Remove(oldSettlement);
+                    }
+                    leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, oldSettlement);
+                }
             }
-            Messages.Message("SL_PowerVoidEnded".Translate(faction.Name), MessageTypeDefOf.NeutralEvent);
+            base.OnResolve();
         }
 
         public override bool IsTarget(object target)

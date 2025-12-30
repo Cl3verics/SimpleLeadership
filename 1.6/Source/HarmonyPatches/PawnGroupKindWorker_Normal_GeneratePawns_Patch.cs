@@ -17,7 +17,7 @@ namespace SimpleLeadership
                 .Where(s => s.Tile == parms.tile && s.Faction == parms.faction)
                 .FirstOrDefault();
 
-            if (settlement != null && settlement.IsInPowerEvent<PowerStruggle>())
+            if (settlement != null && (settlement.IsInPowerEvent<PowerStruggle>() || parms.faction.IsInPowerEvent<PowerVoid>()))
             {
                 parms.points *= 0.6f;
             }

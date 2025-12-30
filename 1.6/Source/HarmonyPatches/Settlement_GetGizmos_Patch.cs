@@ -15,14 +15,36 @@ namespace SimpleLeadership
             {
                 var gizmos = new List<Gizmo>(__result);
 
-                gizmos.Add(new Command_Action
+                foreach (var def in DefDatabase<PowerEventDef>.AllDefs)
                 {
-                    defaultLabel = "DEV: Start Power Struggle",
-                    action = () =>
+                    if (typeof(SettlementPowerEvent).IsAssignableFrom(def.workerClass))
                     {
-                        WorldComponent_LeaderTracker.Instance.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, __instance);
+                        var activeEvent = __instance.GetActiveEvents<SettlementPowerEvent>().FirstOrDefault(e => e.def == def);
+
+                        if (activeEvent != null)
+                        {
+                            gizmos.Add(new Command_Action
+                            {
+                                defaultLabel = "DEV: End " + def.label,
+                                action = () =>
+                                {
+                                    WorldComponent_LeaderTracker.Instance.EndPowerEvent(activeEvent);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            gizmos.Add(new Command_Action
+                            {
+                                defaultLabel = "DEV: Start " + def.label,
+                                action = () =>
+                                {
+                                    WorldComponent_LeaderTracker.Instance.StartPowerEvent(def, __instance);
+                                }
+                            });
+                        }
                     }
-                });
+                }
 
                 gizmos.Add(new Command_Action
                 {
@@ -32,19 +54,6 @@ namespace SimpleLeadership
                         WorldComponent_LeaderTracker.Instance.StartPowerEvent(PowerEventDefOf.SL_PowerVoid, __instance.Faction);
                     }
                 });
-
-                if (__instance.IsInPowerEvent<PowerStruggle>())
-                {
-                    gizmos.Add(new Command_Action
-                    {
-                        defaultLabel = "DEV: End Power Struggle",
-                        action = () =>
-                        {
-                            var ev = __instance.GetActiveEvents<PowerStruggle>().FirstOrDefault();
-                            if (ev != null) WorldComponent_LeaderTracker.Instance.EndPowerEvent(ev);
-                        }
-                    });
-                }
 
                 if (__instance.Faction.IsInPowerEvent<PowerVoid>())
                 {

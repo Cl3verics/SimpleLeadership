@@ -11,6 +11,9 @@ namespace SimpleLeadership
         public List<string> effects;
         public FloatRange durationDays;
         public string iconPath;
+        public string startMessage;
+        public string endMessage;
+        public float chancePerSeason;
 
         [Unsaved(false)]
         private Texture2D icon;

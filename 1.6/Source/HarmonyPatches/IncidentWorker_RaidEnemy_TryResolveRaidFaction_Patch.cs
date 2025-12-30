@@ -19,10 +19,13 @@ namespace SimpleLeadership
 
             if (originSettlement != null)
             {
-                WorldComponent_LeaderTracker leaderTracker = WorldComponent_LeaderTracker.Instance;
                 if (originSettlement.IsInPowerEvent<PowerStruggle>())
                 {
                     parms.points *= 0.6f;
+                }
+                else if (originSettlement.IsInPowerEvent(PowerEventDefOf.SL_Fortifying))
+                {
+                    parms.points *= 2f;
                 }
             }
         }

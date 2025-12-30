@@ -44,6 +44,29 @@ namespace SimpleLeadership
                     EndPowerEvent(activeEvents[i]);
                 }
             }
+            TryTriggerRandomEvents();
+        }
+
+        private void TryTriggerRandomEvents()
+        {
+            int currentTick = Find.TickManager.TicksGame;
+            if (currentTick < 900000) return;
+
+            PowerEventDef[] randomEvents = [PowerEventDefOf.SL_Fortifying, PowerEventDefOf.SL_Inspection, PowerEventDefOf.SL_Vigilant];
+
+            foreach (Settlement settlement in Find.WorldObjects.Settlements)
+            {
+                if (settlement.Faction == null) continue;
+                if (!IsValidFactionForLeaders(settlement.Faction)) continue;
+                if (settlement.Faction == Faction.OfPlayer) continue;
+                if (GetActiveEventsFor(settlement).Any()) continue;
+
+                PowerEventDef eventDef = randomEvents.RandomElement();
+                if (eventDef.chancePerSeason > 0f && Rand.MTBEventOccurs(1f / eventDef.chancePerSeason * 15f, 60000f, 2500f))
+                {
+                    StartPowerEvent(eventDef, settlement);
+                }
+            }
         }
 
         public override void ExposeData()
