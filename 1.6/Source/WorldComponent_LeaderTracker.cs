@@ -15,6 +15,7 @@ namespace SimpleLeadership
         private bool initialized = false;
         private List<Faction> keys = [];
         private List<FactionLeadershipData> values = [];
+        private List<PowerEventDef> randomSettlementEvents;
 
         public static WorldComponent_LeaderTracker Instance => Find.World.GetComponent<WorldComponent_LeaderTracker>();
 
@@ -37,6 +38,10 @@ namespace SimpleLeadership
                 InitializeLeaders();
                 initialized = true;
             }
+            if (randomSettlementEvents == null)
+            {
+                randomSettlementEvents = DefDatabase<PowerEventDef>.AllDefs.Where(def => def.chancePerSeason > 0f && typeof(SettlementPowerEvent).IsAssignableFrom(def.workerClass)).ToList();
+            }
             for (int i = activeEvents.Count - 1; i >= 0; i--)
             {
                 if (!activeEvents[i].IsActive())
@@ -49,21 +54,19 @@ namespace SimpleLeadership
 
         private void TryTriggerRandomEvents()
         {
-            int currentTick = Find.TickManager.TicksGame;
-            if (currentTick < 900000) return;
-
-            PowerEventDef[] randomEvents = [PowerEventDefOf.SL_Fortifying, PowerEventDefOf.SL_Inspection, PowerEventDefOf.SL_Vigilant];
-
+            if (Find.TickManager.TicksGame % 2500 != 0) return;
             foreach (Settlement settlement in Find.WorldObjects.Settlements)
             {
-                if (settlement.Faction == null) continue;
                 if (!IsValidFactionForLeaders(settlement.Faction)) continue;
-                if (settlement.Faction == Faction.OfPlayer) continue;
-                if (GetActiveEventsFor(settlement).Any()) continue;
 
-                PowerEventDef eventDef = randomEvents.RandomElement();
-                if (eventDef.chancePerSeason > 0f && Rand.MTBEventOccurs(1f / eventDef.chancePerSeason * 15f, 60000f, 2500f))
+                PowerEventDef eventDef = randomSettlementEvents.RandomElement();
+                if (Rand.MTBEventOccurs(15f / eventDef.chancePerSeason, 60000f, 2500f))
                 {
+                    var activeEvent = GetActiveEventsFor(settlement).OfType<SettlementPowerEvent>().FirstOrDefault();
+                    if (activeEvent != null)
+                    {
+                        EndPowerEvent(activeEvent);
+                    }
                     StartPowerEvent(eventDef, settlement);
                 }
             }
