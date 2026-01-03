@@ -48,7 +48,7 @@ namespace SimpleLeadership
             }
 
             Pawn baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(settlement);
-            if (baseLeader != null && !baseLeader.Dead && !baseLeader.Spawned && !pawnList.Contains(baseLeader))
+            if (Rand.Chance(0.1f) && baseLeader != null && !baseLeader.Dead && !baseLeader.Spawned && !pawnList.Contains(baseLeader))
             {
                 var tracker = WorldComponent_LeaderTracker.Instance;
                 var factionSettlements = Find.WorldObjects.Settlements.Where(s => s.Faction == parms.faction).ToList();
