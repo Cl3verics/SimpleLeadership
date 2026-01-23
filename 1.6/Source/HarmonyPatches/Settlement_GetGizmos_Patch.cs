@@ -39,6 +39,14 @@ namespace SimpleLeadership
                                 defaultLabel = "DEV: Start " + def.label,
                                 action = () =>
                                 {
+                                    var activeEvents = __instance.GetActiveEvents<SettlementPowerEvent>().ToList();
+                                    foreach (var ev in activeEvents)
+                                    {
+                                        if (ev.def != PowerEventDefOf.SL_PowerStruggle)
+                                        {
+                                            WorldComponent_LeaderTracker.Instance.EndPowerEvent(ev);
+                                        }
+                                    }
                                     WorldComponent_LeaderTracker.Instance.StartPowerEvent(def, __instance);
                                 }
                             });

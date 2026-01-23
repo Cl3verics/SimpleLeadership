@@ -8,8 +8,6 @@
     <workerClass>SimpleLeadership.PowerVoid</workerClass>
     <iconPath>UI/PowerEvents/PowerVoid</iconPath>
     <durationDays>15</durationDays>
-    <startMessage>Power void has begun in {0}</startMessage>
-    <endMessage>The power void in {0} has ended</endMessage>
     <effects>
       <li>Defenses at this faction's bases are weakened</li>
       <li>Raids from this faction are disabled</li>

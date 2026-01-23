@@ -26,6 +26,8 @@ namespace SimpleLeadership
         private static readonly Color PowerEventBoxColor = new Color(0.32f, 0.38f, 0.22f);
         private static readonly Color PowerEventTitleColor = new Color(0.9f, 0.85f, 0.2f);
 
+        public override bool IsVisible => SelObject is Settlement settlement && settlement.Faction != Faction.OfPlayer;
+
         public WITab_FactionLeadership()
         {
             labelKey = "SL_Leaders";
@@ -54,7 +56,7 @@ namespace SimpleLeadership
 
             Pawn factionLeader = faction.leader;
             string factionLeaderLocation = GetLeaderLocationText(factionLeader);
-            DrawLeadershipColumn(leftColumnRect, "SL_FactionLeadership", factionLeader, factionLeaderLocation, faction, null, leaderTracker, true);
+            DrawLeadershipColumn(leftColumnRect, "SL_FactionLeadership", factionLeader, factionLeaderLocation, faction, selectedSettlement, leaderTracker, true);
 
             Pawn baseLeader = leaderTracker.GetBaseLeader(selectedSettlement);
             string baseLeaderLocation = GetLeaderLocationText(baseLeader);
@@ -83,8 +85,12 @@ namespace SimpleLeadership
 
             if (leader != null && !leader.Dead)
             {
-                float spawnChance = CalculateSpawnChance(leader, faction, settlement, leaderTracker);
+                float spawnChance = Utils.CalculateSpawnChance(leader, faction, settlement);
                 DrawSpawnChance(ref curY, rect, spawnChance);
+            }
+            else
+            {
+                curY += InfoRowHeight;
             }
 
             Widgets.DrawLineHorizontal(isLeft ? 0f : size.x / 2f, curY, size.x / 2f, Color.gray);
@@ -130,45 +136,6 @@ namespace SimpleLeadership
             curY += InfoRowHeight;
         }
 
-        private float CalculateSpawnChance(Pawn leader, Faction faction, Settlement settlement, WorldComponent_LeaderTracker leaderTracker)
-        {
-            if (leader == null || leader.Dead || leader.Spawned)
-                return 0f;
-
-            int settlementCount = Find.WorldObjects.Settlements
-                .Where(s => s.Faction == faction)
-                .Count();
-
-            float spawnChance = 0f;
-
-            if (leader == faction.leader)
-            {
-                if (settlementCount > 0)
-                {
-                    spawnChance = 1f / (float)settlementCount;
-                    if (settlement != null && settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
-                    {
-                        spawnChance += 0.3f;
-                    }
-                }
-            }
-            else
-            {
-                var factionSettlements = Find.WorldObjects.Settlements.Where(s => s.Faction == faction).ToList();
-                int controlledBases = factionSettlements.Count(s => leaderTracker.GetBaseLeader(s) == leader);
-
-                if (controlledBases > 0)
-                {
-                    spawnChance = 1f / controlledBases;
-                    if (settlement != null && settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
-                    {
-                        spawnChance += 0.3f;
-                    }
-                }
-            }
-
-            return spawnChance;
-        }
 
         private void DrawSpawnChance(ref float curY, Rect container, float spawnChance)
         {

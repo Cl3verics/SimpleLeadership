@@ -1,5 +1,6 @@
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 
 namespace SimpleLeadership
 {
@@ -10,7 +11,8 @@ namespace SimpleLeadership
         {
             if (guestStatus == GuestStatus.Prisoner && newHost == Faction.OfPlayer)
             {
-                BaseLeaderDefeatChecker.CheckForBaseLeaderDefeat(__instance.pawn);
+                var pawn = __instance.pawn;
+                Utils.CheckForBaseLeaderDefeat(pawn);
             }
         }
     }

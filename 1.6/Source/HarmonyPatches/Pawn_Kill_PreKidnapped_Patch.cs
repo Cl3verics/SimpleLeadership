@@ -8,7 +8,7 @@ namespace SimpleLeadership
     {
         public static void Postfix(Pawn __instance, Pawn kidnapper)
         {
-            BaseLeaderDefeatChecker.CheckForBaseLeaderDefeat(__instance);
+            Utils.CheckForBaseLeaderDefeat(__instance);
         }
     }
 }

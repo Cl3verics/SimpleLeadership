@@ -7,10 +7,12 @@ namespace SimpleLeadership
     public class FactionLeadershipData : IExposable
     {
         public Dictionary<Settlement, Pawn> settlementLeaders = [];
+        public Pawn actingLeader;
 
         public void ExposeData()
         {
             Scribe_Collections.Look(ref settlementLeaders, "settlementLeaders", LookMode.Reference, LookMode.Reference);
+            Scribe_References.Look(ref actingLeader, "actingLeader");
         }
     }
 }

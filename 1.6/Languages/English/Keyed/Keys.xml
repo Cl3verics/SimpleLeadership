@@ -3,8 +3,8 @@
   <SL_Leaders>Leaders</SL_Leaders>
   <SL_FactionLeadership>Faction Leadership</SL_FactionLeadership>
   <SL_BaseLeadership>Base Leadership</SL_BaseLeadership>
-  <SL_RaidOriginInfo>This raid originated from Base '{0}' of faction {1}.</SL_RaidOriginInfo>
-  <SL_RaidOriginLeaderInfo>If you capture or kill their leader, '{0}', this base will be weakened.</SL_RaidOriginLeaderInfo>
+  <SL_RaidOriginInfo>(This raid originated from Base {0})</SL_RaidOriginInfo>
+  <SL_RaidOriginLeaderInfo>Base Leader {PAWN_nameDef} decided to join this raid, if you can capture or kill them - all future raids from this base will be weakened.</SL_RaidOriginLeaderInfo>
   <SL_SiteOwnershipInfo>Base '{0}' has claimed ownership of this site.</SL_SiteOwnershipInfo>
   <SL_JumpToBase>Jump to Base</SL_JumpToBase>
   <SL_JumpToBaseDesc>Jump to the base that owns this site.</SL_JumpToBaseDesc>
@@ -15,4 +15,7 @@
   <SL_LeaderName>Name:</SL_LeaderName>
   <SL_SpawnChance>Spawn Chance:</SL_SpawnChance>
   <SL_VigilantBonus>Vigilant ({0})</SL_VigilantBonus>
+  <SL_ActingLeaderChosen>The acting {FACTION_leaderTitle} is {PAWN_nameDef} until a new leader is chosen.</SL_ActingLeaderChosen>
+  <SL_PowerVoidEndedLetterLabel>{FACTION_name} has come out of a Power Void.</SL_PowerVoidEndedLetterLabel>
+  <SL_NewLeaderElectedLetterBody>{PAWN_nameDef} has been selected as the new faction leader.</SL_NewLeaderElectedLetterBody>
 </LanguageData>

@@ -10,15 +10,19 @@ namespace SimpleLeadership
     {
         public static void Postfix(ref string __result, IncidentParms parms, List<Pawn> pawns)
         {
-            if (RaidContext.CurrentOrigin != null)
+            if (RaidContext.CurrentOrigin == null)
             {
-                __result += "\n\n" + "SL_RaidOriginInfo".Translate(RaidContext.CurrentOrigin.Label, RaidContext.CurrentOrigin.Faction.Name);
-                
-                Pawn baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(RaidContext.CurrentOrigin);
-                if (baseLeader != null)
-                {
-                    __result += " " + "SL_RaidOriginLeaderInfo".Translate(baseLeader.LabelShort);
-                }
+                return;
+            }
+
+            var coloredBaseName = RaidContext.CurrentOrigin.Label.Colorize(ColorLibrary.RedReadable);
+            __result += "\n\n" + string.Format("SL_RaidOriginInfo".Translate(), coloredBaseName);
+
+            Pawn baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(RaidContext.CurrentOrigin);
+            if (baseLeader != null && pawns.Contains(baseLeader))
+            {
+                var coloredLeaderName = baseLeader.LabelShort.Colorize(ColoredText.NameColor);
+                __result += "\n\n" + string.Format("SL_RaidOriginLeaderInfo".Translate(), coloredLeaderName);
             }
         }
     }

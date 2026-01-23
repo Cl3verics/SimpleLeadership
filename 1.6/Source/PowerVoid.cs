@@ -39,19 +39,37 @@ namespace SimpleLeadership
 
         public override void OnResolve()
         {
-            List<Pawn> candidates = WorldComponent_LeaderTracker.Instance.GetBaseLeadersFor(faction)
-                .Where(p => p != null && !p.Dead).ToList();
-            
-            if (candidates.Any())
-            {
-                Pawn newLeader = candidates.RandomElement();
-                faction.leader = newLeader;
+            var leaderTracker = WorldComponent_LeaderTracker.Instance;
+            var data = leaderTracker.GetLeadershipDataFor(faction);
+            Pawn newLeader = null;
 
-                Settlement oldSettlement = WorldComponent_LeaderTracker.Instance.GetSettlementOfBaseLeader(newLeader);
+            if (data != null && data.actingLeader != null && !data.actingLeader.Dead)
+            {
+                newLeader = data.actingLeader;
+                faction.leader = newLeader;
+                data.actingLeader = null;
+            }
+            else
+            {
+                List<Pawn> candidates = leaderTracker.GetBaseLeadersFor(faction)
+                    .Where(p => p != null && !p.Dead).ToList();
+        
+                if (candidates.Any())
+                {
+                    newLeader = candidates.RandomElement();
+                    faction.leader = newLeader;
+                }
+            }
+
+            if (newLeader != null)
+            {
+                string label = "SL_PowerVoidEndedLetterLabel".Translate(faction.Named("FACTION"));
+                string body = "SL_NewLeaderElectedLetterBody".Translate(newLeader.Named("PAWN"));
+                Find.LetterStack.ReceiveLetter(label, body, LetterDefOf.NeutralEvent, newLeader, faction);
+
+                Settlement oldSettlement = leaderTracker.GetSettlementOfBaseLeader(newLeader);
                 if (oldSettlement != null)
                 {
-                    var leaderTracker = WorldComponent_LeaderTracker.Instance;
-                    var data = leaderTracker.GetLeadershipDataFor(faction);
                     if (data != null)
                     {
                         data.settlementLeaders.Remove(oldSettlement);
@@ -59,6 +77,7 @@ namespace SimpleLeadership
                     leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, oldSettlement);
                 }
             }
+    
             base.OnResolve();
         }
 
