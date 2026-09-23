@@ -15,7 +15,10 @@ namespace SimpleLeadership
         {
             Scribe_Collections.Look(ref prisoners, "prisoners", LookMode.Reference);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
                 prisoners ??= new List<Pawn>();
+                prisoners.RemoveAll(p => p == null);
+            }
         }
     }
 }

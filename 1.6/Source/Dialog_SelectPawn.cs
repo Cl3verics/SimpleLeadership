@@ -146,7 +146,7 @@ public class Dialog_SelectPawn : Window
 							var pawnFaction = pawn.Faction;
 							if (pawnFaction?.leader == pawn)
 							{
-								pawnFaction?.leader = leader;
+								pawnFaction.leader = leader;
 							}
 							else
 							{
@@ -176,7 +176,10 @@ public class Dialog_SelectPawn : Window
 							var oldLeader = settlementLeaders?[selObject];
 							handleOldLeader(oldLeader);
 							
-							settlementLeaders?[selObject] = pawn;
+							if (settlementLeaders != null)
+							{
+								settlementLeaders[selObject] = pawn;
+							}
 						}
 						pawn.SetFactionDirect(selObject.Faction);
 

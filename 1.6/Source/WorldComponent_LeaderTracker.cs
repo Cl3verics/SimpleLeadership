@@ -114,6 +114,10 @@ namespace SimpleLeadership
         public override void WorldComponentTick()
         {
             base.WorldComponentTick();
+            if (Find.TickManager.TicksGame % GenDate.TicksPerDay == 0)
+            {
+                CleanupStaleLeaders();
+            }
             if (randomSettlementEvents == null)
             {
                 randomSettlementEvents = DefDatabase<PowerEventDef>.AllDefs.Where(def => def.chancePerSeason > 0f && typeof(SettlementPowerEvent).IsAssignableFrom(def.workerClass)).ToList();
@@ -240,7 +244,7 @@ namespace SimpleLeadership
                     Find.WorldPawns.PassToWorld(newLeader, PawnDiscardDecideMode.KeepForever);
                     newLeader.guest.Recruitable = false;
                 }
-                
+
                 return newLeader;
             }
             catch (Exception ex)
@@ -362,5 +366,74 @@ namespace SimpleLeadership
             activeEvents.Remove(eventToEnd);
         }
 
+        private void CleanupStaleLeaders()
+        {
+            List<Faction> factionsToRemove = null;
+            foreach (var kvp in leadershipData)
+            {
+                RemoveStaleSettlements(kvp.Value);
+                if (kvp.Key == null || kvp.Key.defeated)
+                {
+                    factionsToRemove ??= [];
+                    factionsToRemove.Add(kvp.Key);
+                }
+            }
+            UnpinUnreferencedLeaders();
+            if (factionsToRemove != null)
+            {
+                foreach (var faction in factionsToRemove)
+                {
+                    leadershipData.Remove(faction);
+                }
+            }
+            lastRaidOrigin.RemoveAll(kvp => kvp.Key == null || kvp.Key.defeated || kvp.Value == null || kvp.Value.Destroyed);
+            lastLeaderRaidTick.RemoveAll(kvp => kvp.Key == null || kvp.Key.defeated);
+            kidnappedPrisoners.RemoveAll(kvp => kvp.Key == null || kvp.Key.Destroyed);
+        }
+
+        private void RemoveStaleSettlements(FactionLeadershipData data)
+        {
+            List<Settlement> stale = null;
+            foreach (var kvp in data.settlementLeaders)
+            {
+                if (IsStaleAssignment(kvp.Key, kvp.Value))
+                {
+                    stale ??= [];
+                    stale.Add(kvp.Key);
+                }
+            }
+            if (stale == null)
+                return;
+            foreach (var settlement in stale)
+            {
+                data.settlementLeaders.Remove(settlement);
+            }
+        }
+
+        private bool IsStaleAssignment(Settlement settlement, Pawn leader)
+        {
+            if (settlement == null || settlement.Destroyed || settlement.Faction == null || settlement.Faction.defeated)
+                return true;
+            return leader == null || leader.Dead || leader.Destroyed;
+        }
+
+        private void UnpinUnreferencedLeaders()
+        {
+            List<Pawn> unpinned = null;
+            foreach (var pawn in Find.WorldPawns.ForcefullyKeptPawns)
+            {
+                if (!GetSettlementsOfBaseLeader(pawn).Any() && !PawnUtility.IsFactionLeader(pawn))
+                {
+                    unpinned ??= [];
+                    unpinned.Add(pawn);
+                }
+            }
+            if (unpinned == null)
+                return;
+            foreach (var pawn in unpinned)
+            {
+                Find.WorldPawns.ForcefullyKeptPawns.Remove(pawn);
+            }
+        }
     }
 }
