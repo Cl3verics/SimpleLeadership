@@ -10,18 +10,23 @@ namespace SimpleLeadership
     [HarmonyPatch(typeof(Settlement), nameof(Settlement.GetCaravanGizmos))]
     public static class Settlement_GetCaravanGizmos_Patch
     {
-        public static bool GettingGizmos = false;
+        public static bool GettingGizmos;
         public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> values, Settlement __instance)
         {
-            bool sanctioned = __instance.Faction != null && __instance.Faction.IsInPowerEvent(PowerEventDefOf.SL_Sanctioned);
+            var sanctioned = __instance.Faction?.IsInPowerEvent(PowerEventDefOf.SL_Sanctioned) is true;
+            var lastRaid = WorldComponent_LeaderTracker.Instance.lastPlayerRaidTick;
+            var absoluteBorders = __instance.Faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < WorldComponent_LeaderTracker.AbsoluteBordersCooldownTicks;
             GettingGizmos = true;
             try
             {
                 foreach (var gizmo in values)
                 {
-                    if (sanctioned && gizmo is Command_Action cmd && cmd.icon == CaravanVisitUtility.TradeCommandTex)
+                    if (gizmo is Command_Action cmd && cmd.icon == CaravanVisitUtility.TradeCommandTex)
                     {
-                        cmd.Disable("SL_SanctionedCannotTrade".Translate());
+                        if (sanctioned)
+                            cmd.Disable("SL_SanctionedCannotTrade".Translate());
+                        else if (absoluteBorders)
+                            cmd.Disable("SL_AbsoluteBordersCannotTrade".Translate());
                     }
                     yield return gizmo;
                 }

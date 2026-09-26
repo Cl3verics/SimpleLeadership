@@ -11,7 +11,7 @@ namespace SimpleLeadership
     {
         public static void Postfix(Settlement __instance, ref IEnumerable<Gizmo> __result)
         {
-            if (!DebugSettings.ShowDevGizmos) return;
+            if (DebugSettings.ShowDevGizmos is false) return;
 
             var gizmos = new List<Gizmo>(__result);
             var tracker = WorldComponent_LeaderTracker.Instance;
@@ -25,7 +25,7 @@ namespace SimpleLeadership
                     if (data == null) return;
                     var newLeader = tracker.GenerateBaseLeader(__instance.Faction);
                     if (newLeader != null)
-                        data.settlementLeaders[__instance] = newLeader;
+                        tracker.ReplaceBaseLeader(__instance, newLeader);
                 }
             });
 
@@ -54,6 +54,73 @@ namespace SimpleLeadership
                     });
                 }
             }
+
+            if (tracker.activeInvestigation != null)
+            {
+                gizmos.Add(new Command_Action
+                {
+                    defaultLabel = "DEV: Complete Investigation",
+                    action = () => tracker.CompleteInvestigation()
+                });
+            }
+
+            gizmos.Add(new Command_Action
+            {
+                defaultLabel = "DEV: Reroll Doctrines",
+                action = () =>
+                {
+                    var data = tracker.GetLeadershipDataFor(__instance.Faction);
+                    if (data == null) return;
+                    tracker.GenerateDoctrinesFor(__instance.Faction, data);
+                }
+            });
+
+            gizmos.Add(new Command_Action
+            {
+                defaultLabel = "DEV: Add Doctrine",
+                action = () =>
+                {
+                    var data = tracker.GetLeadershipDataFor(__instance.Faction);
+                    if (data == null) return;
+                    var options = new List<FloatMenuOption>();
+                    foreach (var def in DefDatabase<DoctrineDef>.AllDefs)
+                    {
+                        if (data.doctrines.Any(d => d.def == def)) continue;
+                        options.Add(new FloatMenuOption(def.label, () =>
+                        {
+                            if (data.doctrines.Any(d => d.def.ConflictsWith(def))) return;
+                            data.doctrines.Add(new FactionDoctrine
+                            {
+                                def = def,
+                                proposedBy = __instance.Faction.leader
+                            });
+                        }));
+                    }
+                    if (options.Count > 0)
+                        Find.WindowStack.Add(new FloatMenu(options));
+                }
+            });
+
+            gizmos.Add(new Command_Action
+            {
+                defaultLabel = "DEV: Remove Doctrine",
+                action = () =>
+                {
+                    var data = tracker.GetLeadershipDataFor(__instance.Faction);
+                    if (data == null || data.doctrines.Count == 0) return;
+                    var options = new List<FloatMenuOption>();
+                    foreach (var doc in data.doctrines)
+                    {
+                        options.Add(new FloatMenuOption(doc.def.label, () =>
+                        {
+                            data.doctrines.Remove(doc);
+                            if (tracker.activeInvestigation == doc.def)
+                                tracker.CancelInvestigation();
+                        }));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(options));
+                }
+            });
 
             __result = gizmos;
         }

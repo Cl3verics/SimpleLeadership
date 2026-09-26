@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Verse;
 using RimWorld;
+using Verse;
 
 namespace SimpleLeadership
 {
@@ -42,7 +42,7 @@ namespace SimpleLeadership
             var data = leaderTracker.GetLeadershipDataFor(faction);
             Pawn newLeader = null;
 
-            if (data != null && data.actingLeader != null && !data.actingLeader.Dead)
+            if (data?.actingLeader != null && data.actingLeader.Dead is false)
             {
                 newLeader = data.actingLeader;
                 faction.leader = newLeader;
@@ -50,11 +50,17 @@ namespace SimpleLeadership
             }
             else
             {
-                List<Pawn> candidates = leaderTracker.GetBaseLeadersFor(faction)
+                var candidates = leaderTracker.GetBaseLeadersFor(faction)
                     .Where(p => p.IsValidLeaderCandidate()).ToList();
 
-                if (candidates.Any())
+                if (candidates.Count > 0)
                 {
+                    if (data?.exLeader != null && faction.HasDoctrine(PowerEventDefOf.SL_FamilialSuccession))
+                    {
+                        var relatives = candidates.Where(c => c.relations.FamilyByBlood.Contains(data.exLeader)).ToList();
+                        if (relatives.Count > 0)
+                            candidates = relatives;
+                    }
                     newLeader = candidates.RandomElement();
                     faction.leader = newLeader;
                 }
@@ -62,21 +68,13 @@ namespace SimpleLeadership
 
             if (newLeader != null)
             {
-                string label = "SL_PowerVoidEndedLetterLabel".Translate(faction.Named("FACTION"));
-                string body = "SL_NewLeaderElectedLetterBody".Translate(newLeader.Named("PAWN"));
+                var label = "SL_PowerVoidEndedLetterLabel".Translate(faction.Named("FACTION"));
+                var body = "SL_NewLeaderElectedLetterBody".Translate(newLeader.Named("PAWN"));
                 Find.LetterStack.ReceiveLetter(label, body, LetterDefOf.NeutralEvent, newLeader, faction);
-
-                var oldSettlements = leaderTracker.GetSettlementsOfBaseLeader(newLeader).ToList();
-                if (oldSettlements.Any())
+                foreach (var settlement in leaderTracker.GetSettlementsOfBaseLeader(newLeader).ToList())
                 {
-                    if (data != null)
-                    {
-                        foreach (var settlement in oldSettlements)
-                        {
-                            data.settlementLeaders.Remove(settlement);
-                            leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, settlement);
-                        }
-                    }
+                    data.settlementLeaders.Remove(settlement);
+                    leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, settlement);
                 }
             }
 

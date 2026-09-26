@@ -9,6 +9,7 @@
   <SL_JumpToBase>Jump to {0}</SL_JumpToBase>
   <SL_JumpToBaseDesc>Jump to the base that owns this site.</SL_JumpToBaseDesc>
   <SL_Location>Location:</SL_Location>
+  <SL_LocationInfo>Location: {0}</SL_LocationInfo>
   <SL_NotAvailable>Not Available</SL_NotAvailable>
   <SL_CurrentEvents>Current Events</SL_CurrentEvents>
   <SL_FactionFilter>Faction Filter: {0}</SL_FactionFilter>
@@ -49,4 +50,33 @@
   <SL_Blacklist>Blacklist</SL_Blacklist>
   <SL_BlacklistDesc>Factions on this list will not have base leaders generated for them.</SL_BlacklistDesc>
   <SL_KidnappedColonistsDetected>Kidnapped colonists detected in the area</SL_KidnappedColonistsDetected>
+
+  <SL_LeadersTab>Leaders</SL_LeadersTab>
+  <SL_DoctrinesTab>Doctrines</SL_DoctrinesTab>
+  <SL_DoctrinesHeader>Doctrines</SL_DoctrinesHeader>
+  <SL_DoctrinesSubheader>Doctrine bonuses or stat modifiers are applied at all times. Eliminating leaders can result in doctrines being removed.</SL_DoctrinesSubheader>
+  <SL_NoDoctrines>This faction currently has no doctrines in use</SL_NoDoctrines>
+  <SL_PlacedBy>Placed by {0}</SL_PlacedBy>
+  <SL_PlacedByUnknown>Placed by unknown person</SL_PlacedByUnknown>
+  <SL_UnknownProposerDesc>The identity of the person proposed this doctrine is unknown.</SL_UnknownProposerDesc>
+  <SL_InvestigateBtn>INVESTIGATE</SL_InvestigateBtn>
+  <SL_CancelInvestigation>CANCEL INVESTIGATION</SL_CancelInvestigation>
+  <SL_InvestigateNotice>Investigating will take {0} days. You can only investigate one doctrine at a time.</SL_InvestigateNotice>
+  <SL_ConcludesIn>Concludes in {0}</SL_ConcludesIn>
+  <SL_InvestigationInProgressWarning>You are currently investigating this doctrine. Progress will not be saved upon cancellation.</SL_InvestigationInProgressWarning>
+  <SL_AlreadyInvestigatingWarning>You are already investigating {0} from {1}</SL_AlreadyInvestigatingWarning>
+  <SL_JumpToBaseBtn>Jump to {0}</SL_JumpToBaseBtn>
+  <SL_ActiveModifiers>Active Modifiers:
+{0}</SL_ActiveModifiers>
+  <SL_InvestigationCompletedLabel>Doctrine Investigated</SL_InvestigationCompletedLabel>
+  <SL_InvestigationCompletedDesc>Investigation concluded! {2} proposed the {0} doctrine for {1}.</SL_InvestigationCompletedDesc>
+  <SL_LeaderDoctrinesLost>Leader {0} Doctrines are no longer applying to {1}: {2}</SL_LeaderDoctrinesLost>
+  <SL_AbsoluteBordersCannotTrade>Cannot trade with this faction. Their borders are closed due to recent hostilities.</SL_AbsoluteBordersCannotTrade>
+  <SL_HitAndRunRegrouping>{0} forces are retreating to regroup for another assault!</SL_HitAndRunRegrouping>
+  <SL_ScorchedEarthTriggered>{0} defenders are destroying valuable facilities as they abandon the base!</SL_ScorchedEarthTriggered>
+  <SL_InterventionRaidLetterLabel>Intervention Raid</SL_InterventionRaidLetterLabel>
+  <SL_InterventionRaidLetterBody>{0} has dispatched a raid to eliminate the visiting {1} caravan!</SL_InterventionRaidLetterBody>
+  <SL_MutualDefenseLetterLabel>Retaliation Raid</SL_MutualDefenseLetterLabel>
+  <SL_MutualDefenseLetterBody>{0} has declared a retaliation raid following your aggression against their allies, {1}!</SL_MutualDefenseLetterBody>
+  <SL_BasesUnderLeader>Bases under this leader:</SL_BasesUnderLeader>
 </LanguageData>

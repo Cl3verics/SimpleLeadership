@@ -1,6 +1,7 @@
-using Verse;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
+using Verse;
 
 namespace SimpleLeadership
 {
@@ -12,15 +13,20 @@ namespace SimpleLeadership
 
         public int EndTick => endTick;
 
-        public PowerEventBase()
-        {
-        }
-
         public void Initialize(PowerEventDef def, params object[] args)
         {
             this.def = def;
-            this.endTick = Find.TickManager.TicksGame + (int)(def.durationDays.RandomInRange * 60000f);
+            endTick = Find.TickManager.TicksGame + (int)(def.durationDays.RandomInRange * 60000f);
             SetParameters(args);
+        }
+
+        public void ReduceDuration(float factor)
+        {
+            var remaining = endTick - Find.TickManager.TicksGame;
+            if (remaining > 0)
+            {
+                endTick = Find.TickManager.TicksGame + Mathf.RoundToInt(remaining * factor);
+            }
         }
 
         public virtual void SetParameters(params object[] args) { }
@@ -32,7 +38,7 @@ namespace SimpleLeadership
 
         public virtual void OnStart()
         {
-            if (ShouldGiveMessage() && !string.IsNullOrEmpty(def.startMessage))
+            if (ShouldGiveMessage() && string.IsNullOrEmpty(def.startMessage) is false)
             {
                 SendMessage(GetFormattedMessage(def.startMessage), MessageTypeDefOf.NeutralEvent);
             }
@@ -40,7 +46,7 @@ namespace SimpleLeadership
 
         public virtual void OnResolve()
         {
-            if (ShouldGiveMessage() && !string.IsNullOrEmpty(def.endMessage))
+            if (ShouldGiveMessage() && string.IsNullOrEmpty(def.endMessage) is false)
             {
                 SendMessage(GetFormattedMessage(def.endMessage), MessageTypeDefOf.NeutralEvent);
             }
@@ -64,11 +70,7 @@ namespace SimpleLeadership
             return message;
         }
 
-        public virtual bool ShouldGiveMessage()
-        {
-            if (!SimpleLeadershipMod.Settings.enableAlerts) return false;
-            return true;
-        }
+        public virtual bool ShouldGiveMessage() => SimpleLeadershipMod.Settings.enableAlerts;
 
         public abstract bool IsDuplicate(PowerEventBase other);
 

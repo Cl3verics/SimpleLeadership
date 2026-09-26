@@ -7,6 +7,7 @@ namespace SimpleLeadership
     {
         private int fireTick = -1;
         private IncidentParms parms;
+        public int hitAndRunLockoutTick = -1;
 
         public bool IsScheduled => fireTick >= 0;
 
@@ -30,6 +31,7 @@ namespace SimpleLeadership
             base.ExposeData();
             Scribe_Values.Look(ref fireTick, "fireTick", -1);
             Scribe_Deep.Look(ref parms, "parms");
+            Scribe_Values.Look(ref hitAndRunLockoutTick, "hitAndRunLockoutTick", -1);
         }
     }
 }
