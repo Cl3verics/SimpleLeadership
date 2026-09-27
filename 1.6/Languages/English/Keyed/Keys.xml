@@ -79,4 +79,42 @@
   <SL_MutualDefenseLetterLabel>Retaliation Raid</SL_MutualDefenseLetterLabel>
   <SL_MutualDefenseLetterBody>{0} has declared a retaliation raid following your aggression against their allies, {1}!</SL_MutualDefenseLetterBody>
   <SL_BasesUnderLeader>Bases under this leader:</SL_BasesUnderLeader>
+
+  <SL_DoctrinesSettings>Doctrines</SL_DoctrinesSettings>
+  <SL_MaxDoctrinesPerFaction>Max starting doctrines</SL_MaxDoctrinesPerFaction>
+  <SL_InvestigationDurationDays>Investigation duration (days)</SL_InvestigationDurationDays>
+  <SL_AbsoluteBordersCooldownDays>Absolute Borders cooldown (days)</SL_AbsoluteBordersCooldownDays>
+  <SL_LeaderLegacyDurationMultiplier>Leader's Legacy duration factor</SL_LeaderLegacyDurationMultiplier>
+  <SL_InterventionRaidChance>Intervention raid chance</SL_InterventionRaidChance>
+  <SL_InterventionRaidDelayHours>Intervention raid delay (hours)</SL_InterventionRaidDelayHours>
+  <SL_MutualDefenseChance>Mutual Defense retaliation chance</SL_MutualDefenseChance>
+  <SL_MutualDefenseDelayHours>Mutual Defense delay (hours)</SL_MutualDefenseDelayHours>
+  <SL_ForcesPreservationMultiplier>Forces Preservation retreat threshold factor</SL_ForcesPreservationMultiplier>
+  <SL_HitAndRunCasualtyThreshold>Hit and Run casualty threshold</SL_HitAndRunCasualtyThreshold>
+  <SL_HitAndRunRegroupPointMultiplier>Hit and Run regroup threat factor</SL_HitAndRunRegroupPointMultiplier>
+  <SL_HitAndRunRegroupDelayHours>Hit and Run regroup delay (hours)</SL_HitAndRunRegroupDelayHours>
+  <SL_HitAndRunLockoutDays>Hit and Run lockout duration (days)</SL_HitAndRunLockoutDays>
+  <SL_AttritionSiegeChance>Attrition Warfare siege chance</SL_AttritionSiegeChance>
+  <SL_NoMercyExecutionRange>No Mercy execution range</SL_NoMercyExecutionRange>
+  <SL_ScorchedEarthMaxFires>Scorched Earth max fires</SL_ScorchedEarthMaxFires>
+  <SL_GraciousRepatriationMultiplier>Gracious Repatriation goodwill bonus</SL_GraciousRepatriationMultiplier>
+  <SL_FallenVenerationCorpseGoodwill>Fallen Veneration corpse goodwill</SL_FallenVenerationCorpseGoodwill>
+  <SL_MaxDoctrinesPerFaction.Desc>Maximum number of doctrines randomly assigned to a faction when its leadership is first generated.</SL_MaxDoctrinesPerFaction.Desc>
+  <SL_InvestigationDurationDays.Desc>How many days an investigation takes before the origin of a doctrine is revealed.</SL_InvestigationDurationDays.Desc>
+  <SL_AbsoluteBordersCooldownDays.Desc>How long factions with the Absolute Borders doctrine will refuse trade after you raid one of their settlements.</SL_AbsoluteBordersCooldownDays.Desc>
+  <SL_LeaderLegacyDurationMultiplier.Desc>Duration of power events against factions with the Leader's Legacy doctrine is multiplied by this factor.</SL_LeaderLegacyDurationMultiplier.Desc>
+  <SL_InterventionRaidChance.Desc>Chance that a hostile faction with the Intervention doctrine dispatches a raid against a visiting enemy caravan.</SL_InterventionRaidChance.Desc>
+  <SL_InterventionRaidDelayHours.Desc>How long the intervention raid takes to arrive after being dispatched.</SL_InterventionRaidDelayHours.Desc>
+  <SL_MutualDefenseChance.Desc>Chance that a faction with the Mutual Defense doctrine declares a retaliation raid when an ally's settlement is attacked.</SL_MutualDefenseChance.Desc>
+  <SL_MutualDefenseDelayHours.Desc>How long the retaliation raid takes to arrive after being declared.</SL_MutualDefenseDelayHours.Desc>
+  <SL_ForcesPreservationMultiplier.Desc>Multiplier applied to the casualty threshold before raiders with the Forces Preservation doctrine retreat.</SL_ForcesPreservationMultiplier.Desc>
+  <SL_HitAndRunCasualtyThreshold.Desc>Fraction of pawns lost before raiders with the Hit and Run doctrine break off and retreat to regroup.</SL_HitAndRunCasualtyThreshold.Desc>
+  <SL_HitAndRunRegroupPointMultiplier.Desc>Threat points multiplier for the regrouped follow-up raid.</SL_HitAndRunRegroupPointMultiplier.Desc>
+  <SL_HitAndRunRegroupDelayHours.Desc>How long the regrouped raid takes to return to the assault.</SL_HitAndRunRegroupDelayHours.Desc>
+  <SL_HitAndRunLockoutDays.Desc>Minimum time between consecutive Hit and Run regroup raids.</SL_HitAndRunLockoutDays.Desc>
+  <SL_AttritionSiegeChance.Desc>Chance that raids from factions with the Attrition Warfare doctrine arrive as sieges.</SL_AttritionSiegeChance.Desc>
+  <SL_NoMercyExecutionRange.Desc>Search radius in which raiders with the No Mercy doctrine hunt for downed colonists to execute.</SL_NoMercyExecutionRange.Desc>
+  <SL_ScorchedEarthMaxFires.Desc>Maximum number of structures set alight when a base under the Scorched Earth doctrine is abandoned.</SL_ScorchedEarthMaxFires.Desc>
+  <SL_GraciousRepatriationMultiplier.Desc>Bonus goodwill gained, as a fraction of the original gain, when returning healthy prisoners to a faction with the Gracious Repatriation doctrine.</SL_GraciousRepatriationMultiplier.Desc>
+  <SL_FallenVenerationCorpseGoodwill.Desc>Goodwill gained per corpse of a fallen faction member returned to a faction with the Fallen Veneration doctrine.</SL_FallenVenerationCorpseGoodwill.Desc>
 </LanguageData>

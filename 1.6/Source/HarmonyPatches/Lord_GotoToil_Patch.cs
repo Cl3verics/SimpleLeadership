@@ -11,7 +11,6 @@ namespace SimpleLeadership
     [HarmonyPatch(typeof(Lord), nameof(Lord.GotoToil))]
     public static class Lord_GotoToil_Patch
     {
-        private const int ScorchedEarthMaxFires = 10;
         private const float ScorchedEarthFireSizeMin = 0.5f;
         private const float ScorchedEarthFireSizeMax = 1.5f;
         private const float ScorchedEarthMinFlammability = 0.5f;
@@ -23,7 +22,7 @@ namespace SimpleLeadership
             {
                 var targets = map.listerBuildings.allBuildingsNonColonist
                     .Where(b => b.def.building.isNaturalRock is false && b.GetStatValue(StatDefOf.Flammability) >= ScorchedEarthMinFlammability)
-                    .Take(ScorchedEarthMaxFires)
+                    .Take(SimpleLeadershipMod.Settings.scorchedEarthMaxFires)
                     .ToList();
                 foreach (var b in targets)
                 {

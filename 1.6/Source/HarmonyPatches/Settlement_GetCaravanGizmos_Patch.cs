@@ -15,7 +15,8 @@ namespace SimpleLeadership
         {
             var sanctioned = __instance.Faction?.IsInPowerEvent(PowerEventDefOf.SL_Sanctioned) is true;
             var lastRaid = WorldComponent_LeaderTracker.Instance.lastPlayerRaidTick;
-            var absoluteBorders = __instance.Faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < WorldComponent_LeaderTracker.AbsoluteBordersCooldownTicks;
+            var cooldownTicks = SimpleLeadershipMod.Settings.absoluteBordersCooldownDays * GenDate.TicksPerDay;
+            var absoluteBorders = __instance.Faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < cooldownTicks;
             GettingGizmos = true;
             try
             {

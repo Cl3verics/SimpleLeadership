@@ -12,8 +12,6 @@ namespace SimpleLeadership
     public static class FactionGiftUtility_GiveGift_List_ActiveTransporterInfo_Patch
     {
         private const float FamineBonusFactor = 0.4f;
-        private const float GraciousRepatriationFactor = 0.5f;
-        private const int CorpseGoodwillReward = 2;
 
         public static void Prefix(List<ActiveTransporterInfo> pods, Settlement giveTo, out (int goodwill, bool hasFood, bool hasRepatriated) __state)
         {
@@ -24,7 +22,7 @@ namespace SimpleLeadership
             {
                 var corpses = pods.Sum(pod => pod.innerContainer.Count(t => t is Corpse c && c.InnerPawn?.Faction == giveTo.Faction));
                 if (corpses > 0)
-                    Faction.OfPlayer.TryAffectGoodwillWith(giveTo.Faction, corpses * CorpseGoodwillReward, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.GaveGift);
+                    Faction.OfPlayer.TryAffectGoodwillWith(giveTo.Faction, corpses * SimpleLeadershipMod.Settings.fallenVenerationCorpseGoodwill, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.GaveGift);
             }
             __state = (giveTo.Faction.PlayerGoodwill, hasFood, hasRepatriated);
         }
@@ -40,7 +38,7 @@ namespace SimpleLeadership
             }
             if (__state.hasRepatriated && giveTo.Faction.HasDoctrine(PowerEventDefOf.SL_GraciousRepatriation))
             {
-                var repatBonus = Mathf.RoundToInt(gained * GraciousRepatriationFactor);
+                var repatBonus = Mathf.RoundToInt(gained * SimpleLeadershipMod.Settings.graciousRepatriationGoodwillMultiplier);
                 Faction.OfPlayer.TryAffectGoodwillWith(giveTo.Faction, repatBonus, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.GaveGift);
             }
         }

@@ -28,9 +28,6 @@ namespace SimpleLeadership
         public Dictionary<Faction, Settlement> lastRaidOrigin = [];
         public Dictionary<Settlement, KidnappedPrisonersList> kidnappedPrisoners = [];
         private float MaxLeaderDistance => 60f * Mathf.Sqrt(Find.WorldGrid.TilesCount / 30000f);
-        public const int InvestigationDurationTicks = 8 * GenDate.TicksPerDay;
-        public const int AbsoluteBordersCooldownTicks = 15 * GenDate.TicksPerDay;
-        public const float LeaderLegacyDurationFactor = 0.5f;
         private const int MinParentAgeGapYears = 14;
 
         public DoctrineDef activeInvestigation;
@@ -178,9 +175,9 @@ namespace SimpleLeadership
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 leadershipData ??= [];
-                lastLeaderRaidTick ??= new Dictionary<Faction, int>();
-                lastRaidOrigin ??= new Dictionary<Faction, Settlement>();
-                kidnappedPrisoners ??= new Dictionary<Settlement, KidnappedPrisonersList>();
+                lastLeaderRaidTick ??= new();
+                lastRaidOrigin ??= new();
+                kidnappedPrisoners ??= new();
                 activeEvents ??= [];
                 activeEvents.RemoveAll(ev => ev.GetTarget() == null);
                 eventsByTarget = new Dictionary<object, List<PowerEventBase>>();
@@ -351,7 +348,7 @@ namespace SimpleLeadership
                 var evTarget = newEvent.GetTarget();
                 if (evTarget is Faction f && f.HasDoctrine(PowerEventDefOf.SL_LeadersLegacy) || evTarget is Settlement s && s.Faction != null && s.Faction.HasDoctrine(PowerEventDefOf.SL_LeadersLegacy))
                 {
-                    newEvent.ReduceDuration(LeaderLegacyDurationFactor);
+                    newEvent.ReduceDuration(SimpleLeadershipMod.Settings.leaderLegacyDurationMultiplier);
                 }
             }
             newEvent.OnStart();
@@ -374,10 +371,7 @@ namespace SimpleLeadership
                 : new List<PowerEventBase>();
         }
 
-        public bool IsInPowerEvent<T>(object target) where T : PowerEventBase
-        {
-            return GetActiveEventsFor(target).OfType<T>().Any();
-        }
+        public bool IsInPowerEvent<T>(object target) where T : PowerEventBase => GetActiveEventsFor(target).OfType<T>().Any();
 
         public void EndPowerEvent(PowerEventBase eventToEnd)
         {
@@ -403,7 +397,7 @@ namespace SimpleLeadership
             data.doctrines ??= [];
             data.doctrines.Clear();
 
-            var count = Rand.RangeInclusive(0, 3);
+            var count = Rand.RangeInclusive(0, SimpleLeadershipMod.Settings.maxDoctrinesPerFaction);
             if (count == 0)
                 return;
 
@@ -431,7 +425,7 @@ namespace SimpleLeadership
         {
             investigatingFaction = faction;
             activeInvestigation = doctrine.def;
-            investigationEndTick = Find.TickManager.TicksGame + InvestigationDurationTicks;
+            investigationEndTick = Find.TickManager.TicksGame + SimpleLeadershipMod.Settings.investigationDurationDays * GenDate.TicksPerDay;
         }
 
         public void CancelInvestigation()
@@ -441,10 +435,7 @@ namespace SimpleLeadership
             investigationEndTick = -1;
         }
 
-        public void CompleteInvestigation()
-        {
-            investigationEndTick = Find.TickManager.TicksGame;
-        }
+        public void CompleteInvestigation() => investigationEndTick = Find.TickManager.TicksGame;
 
         public void JumpToCurrentInvestigation()
         {
@@ -457,10 +448,7 @@ namespace SimpleLeadership
             }
         }
 
-        public bool IsInvestigationActive(Faction faction, FactionDoctrine doctrine)
-        {
-            return activeInvestigation == doctrine.def && investigatingFaction == faction;
-        }
+        public bool IsInvestigationActive(Faction faction, FactionDoctrine doctrine) => activeInvestigation == doctrine.def && investigatingFaction == faction;
 
         private FactionDoctrine ResolveActiveDoctrine() => GetLeadershipDataFor(investigatingFaction)?.doctrines.FirstOrDefault(d => d.def == activeInvestigation);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 
 namespace SimpleLeadership
@@ -16,15 +17,15 @@ namespace SimpleLeadership
             {
                 if (typeof(Site).IsAssignableFrom(def.worldObjectClass))
                 {
-                    def.comps ??= new List<WorldObjectCompProperties>();
+                    def.comps ??= new();
                     def.comps.Add(new WorldObjectCompProperties_SiteOwnership());
                 }
                 else if (typeof(Settlement).IsAssignableFrom(def.worldObjectClass))
                 {
-                    def.inspectorTabs ??= new List<Type>();
+                    def.inspectorTabs ??= new();
                     def.inspectorTabs.Add(typeof(WITab_FactionLeadership));
 
-                    def.inspectorTabsResolved ??= new List<InspectTabBase>();
+                    def.inspectorTabsResolved ??= new();
                     def.inspectorTabsResolved.Add(InspectTabManager.GetSharedInstance(typeof(WITab_FactionLeadership)));
                 }
             }
@@ -53,10 +54,7 @@ namespace SimpleLeadership
             return data?.doctrines ?? [];
         }
 
-        public static bool IsInPowerEvent<T>(this object obj) where T : PowerEventBase
-        {
-            return WorldComponent_LeaderTracker.Instance.IsInPowerEvent<T>(obj);
-        }
+        public static bool IsInPowerEvent<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.IsInPowerEvent<T>(obj);
 
         public static bool IsInPowerEvent(this object obj, PowerEventDef def)
         {
@@ -65,10 +63,7 @@ namespace SimpleLeadership
             return WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).Any(ev => ev.def == def);
         }
 
-        public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase
-        {
-            return WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
-        }
+        public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
 
         public static bool IsValidLeaderCandidate(this Pawn pawn)
         {
@@ -164,20 +159,18 @@ namespace SimpleLeadership
             faction.leader = null;
         }
 
-        private const float InterventionTriggerChance = 0.35f;
-        private const int InterventionRaidDelayMinTicks = 1000;
-        private const int InterventionRaidDelayMaxTicks = 3000;
-
         public static void TryTriggerInterventionRaid(Map map, Faction visitingFaction)
         {
             var hostileInterventionist = Find.FactionManager.AllFactionsVisible
                 .FirstOrDefault(f => f.HasDoctrine(PowerEventDefOf.SL_Intervention) && f.HostileTo(visitingFaction) && f.HostileTo(Faction.OfPlayer));
-            if (hostileInterventionist == null || Rand.Chance(InterventionTriggerChance) is false)
+            if (hostileInterventionist == null || Rand.Chance(SimpleLeadershipMod.Settings.interventionRaidChance) is false)
                 return;
             var raidParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, map);
             raidParms.faction = hostileInterventionist;
+            raidParms.forced = true;
             raidParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
-            Find.Storyteller.incidentQueue.Add(IncidentDefOf.RaidEnemy, Find.TickManager.TicksGame + Rand.Range(InterventionRaidDelayMinTicks, InterventionRaidDelayMaxTicks), raidParms);
+            var delayTicks = Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour);
+            Find.Storyteller.incidentQueue.Add(IncidentDefOf.RaidEnemy, Find.TickManager.TicksGame + delayTicks, raidParms);
             Find.LetterStack.ReceiveLetter("SL_InterventionRaidLetterLabel".Translate(), "SL_InterventionRaidLetterBody".Translate(hostileInterventionist.NameColored, visitingFaction.NameColored), LetterDefOf.ThreatBig);
         }
 

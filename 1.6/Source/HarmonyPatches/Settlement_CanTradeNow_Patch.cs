@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Verse;
 
@@ -13,7 +14,8 @@ namespace SimpleLeadership
             if (__instance.Faction?.IsInPowerEvent(PowerEventDefOf.SL_Sanctioned) is true)
                 __result = false;
             var lastRaid = WorldComponent_LeaderTracker.Instance.lastPlayerRaidTick;
-            if (__instance.Faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < WorldComponent_LeaderTracker.AbsoluteBordersCooldownTicks)
+            var cooldownTicks = SimpleLeadershipMod.Settings.absoluteBordersCooldownDays * GenDate.TicksPerDay;
+            if (__instance.Faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < cooldownTicks)
                 __result = false;
         }
     }

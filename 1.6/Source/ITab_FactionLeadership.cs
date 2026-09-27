@@ -309,7 +309,7 @@ namespace SimpleLeadership
                     curY += 36f;
                     Text.Font = GameFont.Tiny;
                     GUI.color = Color.gray;
-                    var daysText = (WorldComponent_LeaderTracker.InvestigationDurationTicks / GenDate.TicksPerDay).ToString().Colorize(ColorLibrary.SkyBlue);
+                    var daysText = SimpleLeadershipMod.Settings.investigationDurationDays.ToString().Colorize(ColorLibrary.SkyBlue);
                     Widgets.Label(new Rect(rect.x, curY, rect.width, 36f), "SL_InvestigateNotice".Translate(daysText));
                     GUI.color = Color.white;
                 }

@@ -8,12 +8,7 @@ namespace SimpleLeadership
     [HarmonyPatch(typeof(Faction), nameof(Faction.Notify_MemberExitedMap))]
     public static class Faction_Notify_MemberExitedMap_Patch
     {
-        private const float GraciousRepatriationBonusFactor = 0.5f;
-
-        public static void Prefix(Faction __instance, out int __state)
-        {
-            __state = __instance.PlayerGoodwill;
-        }
+        public static void Prefix(Faction __instance, out int __state) => __state = __instance.PlayerGoodwill;
 
         public static void Postfix(Faction __instance, Pawn member, bool freed, int __state)
         {
@@ -22,7 +17,7 @@ namespace SimpleLeadership
             var gained = __instance.PlayerGoodwill - __state;
             if (gained <= 0)
                 return;
-            var bonus = Mathf.RoundToInt(gained * GraciousRepatriationBonusFactor);
+            var bonus = Mathf.RoundToInt(gained * SimpleLeadershipMod.Settings.graciousRepatriationGoodwillMultiplier);
             Faction.OfPlayer.TryAffectGoodwillWith(__instance, bonus, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.MemberExitedMapHealthy);
         }
     }
