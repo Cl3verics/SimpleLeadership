@@ -17,10 +17,7 @@ namespace SimpleLeadership
             }
         }
 
-        public override bool IsDuplicate(PowerEventBase other)
-        {
-            return other is PowerVoid otherVoid && otherVoid.faction == faction;
-        }
+        public override bool IsDuplicate(PowerEventBase other) => other is PowerVoid otherVoid && otherVoid.faction == faction;
 
         public override void OnStart()
         {
@@ -31,10 +28,7 @@ namespace SimpleLeadership
             base.OnStart();
         }
 
-        protected override string GetFormattedMessage(string message)
-        {
-            return string.Format(message, faction.Name);
-        }
+        protected override string GetFormattedMessage(string message) => string.Format(message, faction.Name);
 
         public override void OnResolve()
         {
@@ -71,6 +65,13 @@ namespace SimpleLeadership
                 var label = "SL_PowerVoidEndedLetterLabel".Translate(faction.Named("FACTION"));
                 var body = "SL_NewLeaderElectedLetterBody".Translate(newLeader.Named("PAWN"));
                 Find.LetterStack.ReceiveLetter(label, body, LetterDefOf.NeutralEvent, newLeader, faction);
+                if (faction.HasDoctrine(PowerEventDefOf.SL_FamilialSuccession))
+                {
+                    foreach (var baseLeader in leaderTracker.GetBaseLeadersFor(faction))
+                    {
+                        leaderTracker.EnsureFamilialRelation(newLeader, baseLeader);
+                    }
+                }
                 foreach (var settlement in leaderTracker.GetSettlementsOfBaseLeader(newLeader).ToList())
                 {
                     data.settlementLeaders.Remove(settlement);
@@ -81,10 +82,7 @@ namespace SimpleLeadership
             base.OnResolve();
         }
 
-        public override bool IsTarget(object target)
-        {
-            return target is Faction f && f == faction;
-        }
+        public override bool IsTarget(object target) => target is Faction f && f == faction;
 
         public override object GetTarget() => faction;
 

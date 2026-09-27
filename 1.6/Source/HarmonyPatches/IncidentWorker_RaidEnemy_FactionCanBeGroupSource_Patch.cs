@@ -10,9 +10,9 @@ namespace SimpleLeadership
     [HarmonyPatch(typeof(IncidentWorker_RaidEnemy), nameof(IncidentWorker_RaidEnemy.FactionCanBeGroupSource))]
     public static class IncidentWorker_RaidEnemy_FactionCanBeGroupSource_Patch
     {
-        public static void Postfix(ref bool __result, Faction f, IncidentParms parms)
+        public static void Postfix(ref bool __result, Faction f, IncidentParms parms, bool desperate = false)
         {
-            if (__result is false || f == null) return;
+            if (__result is false || f == null || desperate) return;
 
             if (f.IsInPowerEvent<PowerVoid>())
             {

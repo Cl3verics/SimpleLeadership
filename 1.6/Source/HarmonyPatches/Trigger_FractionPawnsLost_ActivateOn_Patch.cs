@@ -11,6 +11,8 @@ namespace SimpleLeadership
     {
         public static bool Prefix(Trigger_FractionPawnsLost __instance, Lord lord, TriggerSignal signal, ref bool __result)
         {
+            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_ScorchedEarth) && lord.LordJob is LordJob_DefendBase && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0 && (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= SimpleLeadershipMod.Settings.scorchedEarthCasualtyThreshold)
+                Lord_GotoToil_Patch.TryTriggerScorchedEarth(lord);
             if (lord.faction.HasDoctrine(PowerEventDefOf.SL_FinalPrice) && lord.LordJob is LordJob_AssaultColony or LordJob_DefendBase)
             {
                 __result = false;
@@ -24,7 +26,7 @@ namespace SimpleLeadership
             if (lord.faction.HasDoctrine(PowerEventDefOf.SL_HitAndRun) && lord.LordJob is LordJob_AssaultColony && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0 && (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= SimpleLeadershipMod.Settings.hitAndRunCasualtyThreshold)
             {
                 var comp = lord.Map.GetComponent<MapComponent_DelayedRaid>();
-                if (comp.IsScheduled is false && Find.TickManager.TicksGame >= comp.hitAndRunLockoutTick)
+                if (Find.TickManager.TicksGame >= comp.hitAndRunLockoutTick)
                 {
                     var parms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, lord.Map);
                     parms.faction = lord.faction;

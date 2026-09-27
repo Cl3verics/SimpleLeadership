@@ -18,6 +18,8 @@ namespace SimpleLeadership
         private List<FactionLeadershipData> values = [];
         private List<Faction> raidKeys = [];
         private List<int> raidValues = [];
+        private List<Faction> mutualDefenseKeys = [];
+        private List<int> mutualDefenseValues = [];
 
         private List<Settlement> settlementKeys = [];
         private List<KidnappedPrisonersList> kidnappedPrisonersValues = [];
@@ -35,6 +37,8 @@ namespace SimpleLeadership
         public int investigationEndTick = -1;
         public int lastPlayerRaidTick = -1;
         public Faction lastPlayerRaidVictim;
+        public Dictionary<Faction, int> lastMutualDefenseRaidTick = [];
+        public int lastInterventionRaidTick = -1;
 
         public static WorldComponent_LeaderTracker Instance;
 
@@ -171,6 +175,8 @@ namespace SimpleLeadership
             Scribe_Values.Look(ref investigationEndTick, "investigationEndTick", -1);
             Scribe_Values.Look(ref lastPlayerRaidTick, "lastPlayerRaidTick", -1);
             Scribe_References.Look(ref lastPlayerRaidVictim, "lastPlayerRaidVictim");
+            Scribe_Collections.Look(ref lastMutualDefenseRaidTick, "lastMutualDefenseRaidTick", LookMode.Reference, LookMode.Value, ref mutualDefenseKeys, ref mutualDefenseValues);
+            Scribe_Values.Look(ref lastInterventionRaidTick, "lastInterventionRaidTick", -1);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -179,6 +185,7 @@ namespace SimpleLeadership
                 lastRaidOrigin ??= new();
                 kidnappedPrisoners ??= new();
                 activeEvents ??= [];
+                lastMutualDefenseRaidTick ??= new();
                 activeEvents.RemoveAll(ev => ev.GetTarget() == null);
                 eventsByTarget = new Dictionary<object, List<PowerEventBase>>();
                 foreach (var ev in activeEvents)
@@ -255,10 +262,9 @@ namespace SimpleLeadership
                 {
                     Find.WorldPawns.PassToWorld(newLeader, PawnDiscardDecideMode.KeepForever);
                     newLeader.guest.Recruitable = false;
-                    if (faction.HasDoctrine(PowerEventDefOf.SL_FamilialSuccession) && faction.leader != null && faction.leader != newLeader)
+                    if (faction.HasDoctrine(PowerEventDefOf.SL_FamilialSuccession))
                     {
-                        var rel = faction.leader.ageTracker.AgeBiologicalYears - newLeader.ageTracker.AgeBiologicalYears >= MinParentAgeGapYears ? PawnRelationDefOf.Parent : PawnRelationDefOf.Sibling;
-                        newLeader.relations.AddDirectRelation(rel, faction.leader);
+                        EnsureFamilialRelation(faction.leader, newLeader);
                     }
                 }
 
@@ -268,6 +274,32 @@ namespace SimpleLeadership
             {
                 Log.Error($"[SimpleLeadership] Failed to generate base leader for {faction.Name}: {ex.Message}");
                 return null;
+            }
+        }
+
+        public void EnsureFamilialRelation(Pawn factionLeader, Pawn baseLeader)
+        {
+            if (factionLeader == null || baseLeader == null || factionLeader == baseLeader || factionLeader.relations.FamilyByBlood.Contains(baseLeader))
+                return;
+            var ageGap = factionLeader.ageTracker.AgeBiologicalYears - baseLeader.ageTracker.AgeBiologicalYears;
+            if (Mathf.Abs(ageGap) >= MinParentAgeGapYears)
+            {
+                var elder = ageGap >= 0 ? factionLeader : baseLeader;
+                var younger = elder == factionLeader ? baseLeader : factionLeader;
+                younger.relations.AddDirectRelation(PawnRelationDefOf.Parent, elder);
+            }
+            else
+            {
+                var sharedParent = factionLeader.relations.GetFirstDirectRelationPawn(PawnRelationDefOf.Parent);
+                if (sharedParent == null)
+                {
+                    var request = new PawnGenerationRequest(factionLeader.kindDef, factionLeader.Faction, PawnGenerationContext.NonPlayer, forceGenerateNewPawn: true, forceDead: true, canGeneratePawnRelations: false, fixedBiologicalAge: Mathf.Max(factionLeader.ageTracker.AgeBiologicalYears, baseLeader.ageTracker.AgeBiologicalYears) + 25f);
+                    sharedParent = PawnGenerator.GeneratePawn(request);
+                    Find.WorldPawns.PassToWorld(sharedParent, PawnDiscardDecideMode.KeepForever);
+                    factionLeader.relations.AddDirectRelation(PawnRelationDefOf.Parent, sharedParent);
+                }
+
+                baseLeader.relations.AddDirectRelation(PawnRelationDefOf.Parent, sharedParent);
             }
         }
 
@@ -419,6 +451,13 @@ namespace SimpleLeadership
                     isInvestigated = false
                 });
             }
+            if (data.doctrines.Any(d => d.def == PowerEventDefOf.SL_FamilialSuccession))
+            {
+                foreach (var baseLeader in data.settlementLeaders.Values.Distinct())
+                {
+                    EnsureFamilialRelation(faction.leader, baseLeader);
+                }
+            }
         }
 
         public void StartInvestigation(Faction faction, FactionDoctrine doctrine)
@@ -482,6 +521,8 @@ namespace SimpleLeadership
                 return;
             var oldLeader = data.settlementLeaders.GetValueOrDefault(settlement);
             data.settlementLeaders[settlement] = newLeader;
+            if (oldLeader != null && oldLeader != newLeader && oldLeader != faction.leader && data.exBaseLeaders.Contains(oldLeader) is false)
+                data.exBaseLeaders.Add(oldLeader);
             if (oldLeader != null && oldLeader != newLeader && data.settlementLeaders.ContainsValue(oldLeader) is false && oldLeader != faction.leader)
                 Notify_LeaderLost(faction, oldLeader);
         }
@@ -513,6 +554,7 @@ namespace SimpleLeadership
             List<Faction> factionsToRemove = null;
             foreach (var kvp in leadershipData)
             {
+                kvp.Value.exBaseLeaders.RemoveAll(p => p == null || p.Dead);
                 RemoveStaleSettlements(kvp.Key, kvp.Value);
                 if (kvp.Key == null || kvp.Key.defeated)
                 {
@@ -533,6 +575,7 @@ namespace SimpleLeadership
             lastRaidOrigin.RemoveAll(kvp => kvp.Key == null || kvp.Key.defeated || kvp.Value == null || kvp.Value.Destroyed);
             lastLeaderRaidTick.RemoveAll(kvp => kvp.Key == null || kvp.Key.defeated);
             kidnappedPrisoners.RemoveAll(kvp => kvp.Key == null || kvp.Key.Destroyed);
+            lastMutualDefenseRaidTick.RemoveAll(kvp => kvp.Key == null || kvp.Key.defeated);
         }
 
         private void RemoveStaleSettlements(Faction faction, FactionLeadershipData data)
@@ -556,7 +599,11 @@ namespace SimpleLeadership
             }
             foreach (var leader in removedLeaders.Distinct())
             {
-                if (leader != null && data.settlementLeaders.ContainsValue(leader) is false && leader != faction.leader)
+                if (leader == null || leader == faction.leader)
+                    continue;
+                if (data.exBaseLeaders.Contains(leader) is false)
+                    data.exBaseLeaders.Add(leader);
+                if (data.settlementLeaders.ContainsValue(leader) is false)
                     Notify_LeaderLost(faction, leader);
             }
         }
@@ -568,12 +615,31 @@ namespace SimpleLeadership
             return leader == null || leader.Dead || leader.Destroyed;
         }
 
+        private bool IsTrackedLeaderOrRelative(Pawn pawn)
+        {
+            foreach (var kvp in leadershipData)
+            {
+                var faction = kvp.Key;
+                var data = kvp.Value;
+                if (faction == null || data == null)
+                    continue;
+                if (data.exLeader == pawn || data.actingLeader == pawn || data.exBaseLeaders.Contains(pawn) || faction.leader != null && (faction.leader == pawn || faction.leader.relations.FamilyByBlood.Contains(pawn)) || data.actingLeader != null && data.actingLeader.relations.FamilyByBlood.Contains(pawn))
+                    return true;
+                foreach (var leader in data.settlementLeaders.Values)
+                {
+                    if (leader != null && (leader == pawn || leader.relations.FamilyByBlood.Contains(pawn)))
+                        return true;
+                }
+            }
+            return false;
+        }
+
         private void UnpinUnreferencedLeaders()
         {
             List<Pawn> unpinned = null;
             foreach (var pawn in Find.WorldPawns.ForcefullyKeptPawns)
             {
-                if (GetSettlementsOfBaseLeader(pawn).Any() is false && PawnUtility.IsFactionLeader(pawn) is false)
+                if (GetSettlementsOfBaseLeader(pawn).Any() is false && PawnUtility.IsFactionLeader(pawn) is false && IsTrackedLeaderOrRelative(pawn) is false)
                 {
                     unpinned ??= [];
                     unpinned.Add(pawn);

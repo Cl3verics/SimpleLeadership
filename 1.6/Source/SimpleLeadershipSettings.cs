@@ -57,6 +57,11 @@ namespace SimpleLeadership
         [Step(0.1f)]
         public float interventionRaidDelayHours = 0.8f;
 
+        [Label("SL_InterventionRaidCooldownDays")]
+        [Range(1f, 30f)]
+        [Step(1f)]
+        public float interventionRaidCooldownDays = 1f;
+
         [Label("SL_MutualDefenseChance")]
         [Percentage]
         public float mutualDefenseRetaliationChance = 0.4f;
@@ -65,6 +70,11 @@ namespace SimpleLeadership
         [Range(0.1f, 12f)]
         [Step(0.1f)]
         public float mutualDefenseRetaliationDelayHours = 1.5f;
+
+        [Label("SL_MutualDefenseCooldownDays")]
+        [Range(1f, 30f)]
+        [Step(1f)]
+        public float mutualDefenseCooldownDays = 5f;
 
         [Label("SL_ForcesPreservationMultiplier")]
         [Percentage]
@@ -101,6 +111,10 @@ namespace SimpleLeadership
         [Range(1, 30)]
         [Step(1f)]
         public int scorchedEarthMaxFires = 10;
+
+        [Label("SL_ScorchedEarthCasualtyThreshold")]
+        [Percentage]
+        public float scorchedEarthCasualtyThreshold = 0.5f;
 
         [Label("SL_GraciousRepatriationMultiplier")]
         [Percentage]

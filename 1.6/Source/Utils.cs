@@ -116,6 +116,9 @@ namespace SimpleLeadership
 
             if (leaderSettlements.Count > 0 && pawn != pawn.Faction.leader)
             {
+                var data = leaderTracker.GetLeadershipDataFor(pawn.Faction);
+                if (data != null && data.exBaseLeaders.Contains(pawn) is false)
+                    data.exBaseLeaders.Add(pawn);
                 foreach (var settlement in leaderSettlements)
                 {
                     if (SimpleLeadershipMod.Settings.enableEvents)
@@ -161,16 +164,20 @@ namespace SimpleLeadership
 
         public static void TryTriggerInterventionRaid(Map map, Faction visitingFaction)
         {
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            if (tracker.lastInterventionRaidTick > 0 && Find.TickManager.TicksGame - tracker.lastInterventionRaidTick < Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidCooldownDays * GenDate.TicksPerDay))
+                return;
             var hostileInterventionist = Find.FactionManager.AllFactionsVisible
                 .FirstOrDefault(f => f.HasDoctrine(PowerEventDefOf.SL_Intervention) && f.HostileTo(visitingFaction) && f.HostileTo(Faction.OfPlayer));
             if (hostileInterventionist == null || Rand.Chance(SimpleLeadershipMod.Settings.interventionRaidChance) is false)
                 return;
+            tracker.lastInterventionRaidTick = Find.TickManager.TicksGame;
             var raidParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, map);
             raidParms.faction = hostileInterventionist;
             raidParms.forced = true;
             raidParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
-            var delayTicks = Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour);
-            Find.Storyteller.incidentQueue.Add(IncidentDefOf.RaidEnemy, Find.TickManager.TicksGame + delayTicks, raidParms);
+            var comp = map.GetComponent<MapComponent_DelayedRaid>();
+            comp.Schedule(raidParms, Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour));
             Find.LetterStack.ReceiveLetter("SL_InterventionRaidLetterLabel".Translate(), "SL_InterventionRaidLetterBody".Translate(hostileInterventionist.NameColored, visitingFaction.NameColored), LetterDefOf.ThreatBig);
         }
 

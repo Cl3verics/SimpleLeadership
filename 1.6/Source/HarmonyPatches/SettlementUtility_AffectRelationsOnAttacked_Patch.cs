@@ -16,6 +16,8 @@ namespace SimpleLeadership
             if (mapParent is Settlement attackedSettlement && attackedSettlement.Faction != null)
             {
                 WorldComponent_LeaderTracker.Instance.lastPlayerRaidVictim = attackedSettlement.Faction;
+                var tracker = WorldComponent_LeaderTracker.Instance;
+                var cooldownTicks = Mathf.RoundToInt(SimpleLeadershipMod.Settings.mutualDefenseCooldownDays * GenDate.TicksPerDay);
                 var retaliationTarget = Find.AnyPlayerHomeMap;
                 if (retaliationTarget != null)
                 {
@@ -23,12 +25,15 @@ namespace SimpleLeadership
                     {
                         if (faction == attackedSettlement.Faction || faction.HasDoctrine(PowerEventDefOf.SL_MutualDefense) is false || faction.RelationKindWith(attackedSettlement.Faction) != FactionRelationKind.Ally || Rand.Chance(SimpleLeadershipMod.Settings.mutualDefenseRetaliationChance) is false)
                             continue;
+                        if (tracker.lastMutualDefenseRaidTick.TryGetValue(faction, out var lastTick) && Find.TickManager.TicksGame - lastTick < cooldownTicks)
+                            continue;
                         if (faction.HostileTo(Faction.OfPlayer) is false)
                         {
                             faction.TryAffectGoodwillWith(Faction.OfPlayer, MutualDefenseHostilityDrop, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.AttackedSettlement);
                             if (faction.HostileTo(Faction.OfPlayer) is false)
                                 continue;
                         }
+                        tracker.lastMutualDefenseRaidTick[faction] = Find.TickManager.TicksGame;
                         var incidentParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, retaliationTarget);
                         incidentParms.faction = faction;
                         incidentParms.forced = true;

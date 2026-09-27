@@ -87,8 +87,11 @@
   <SL_LeaderLegacyDurationMultiplier>Leader's Legacy duration factor</SL_LeaderLegacyDurationMultiplier>
   <SL_InterventionRaidChance>Intervention raid chance</SL_InterventionRaidChance>
   <SL_InterventionRaidDelayHours>Intervention raid delay (hours)</SL_InterventionRaidDelayHours>
+  <SL_InterventionRaidCooldownDays>Intervention raid cooldown (days)</SL_InterventionRaidCooldownDays>
   <SL_MutualDefenseChance>Mutual Defense retaliation chance</SL_MutualDefenseChance>
   <SL_MutualDefenseDelayHours>Mutual Defense delay (hours)</SL_MutualDefenseDelayHours>
+  <SL_MutualDefenseCooldownDays>Mutual Defense cooldown (days)</SL_MutualDefenseCooldownDays>
+  <SL_MutualDefenseCooldownDays.Desc>Minimum cooldown between Mutual Defense retaliation raids.</SL_MutualDefenseCooldownDays.Desc>
   <SL_ForcesPreservationMultiplier>Forces Preservation retreat threshold factor</SL_ForcesPreservationMultiplier>
   <SL_HitAndRunCasualtyThreshold>Hit and Run casualty threshold</SL_HitAndRunCasualtyThreshold>
   <SL_HitAndRunRegroupPointMultiplier>Hit and Run regroup threat factor</SL_HitAndRunRegroupPointMultiplier>
@@ -97,6 +100,7 @@
   <SL_AttritionSiegeChance>Attrition Warfare siege chance</SL_AttritionSiegeChance>
   <SL_NoMercyExecutionRange>No Mercy execution range</SL_NoMercyExecutionRange>
   <SL_ScorchedEarthMaxFires>Scorched Earth max fires</SL_ScorchedEarthMaxFires>
+  <SL_ScorchedEarthCasualtyThreshold>Scorched Earth casualty threshold</SL_ScorchedEarthCasualtyThreshold>
   <SL_GraciousRepatriationMultiplier>Gracious Repatriation goodwill bonus</SL_GraciousRepatriationMultiplier>
   <SL_FallenVenerationCorpseGoodwill>Fallen Veneration corpse goodwill</SL_FallenVenerationCorpseGoodwill>
   <SL_MaxDoctrinesPerFaction.Desc>Maximum number of doctrines randomly assigned to a faction when its leadership is first generated.</SL_MaxDoctrinesPerFaction.Desc>
@@ -117,4 +121,6 @@
   <SL_ScorchedEarthMaxFires.Desc>Maximum number of structures set alight when a base under the Scorched Earth doctrine is abandoned.</SL_ScorchedEarthMaxFires.Desc>
   <SL_GraciousRepatriationMultiplier.Desc>Bonus goodwill gained, as a fraction of the original gain, when returning healthy prisoners to a faction with the Gracious Repatriation doctrine.</SL_GraciousRepatriationMultiplier.Desc>
   <SL_FallenVenerationCorpseGoodwill.Desc>Goodwill gained per corpse of a fallen faction member returned to a faction with the Fallen Veneration doctrine.</SL_FallenVenerationCorpseGoodwill.Desc>
+  <SL_InterventionRaidCooldownDays.Desc>Minimum days between intervention raids dispatched against visiting enemy caravans.</SL_InterventionRaidCooldownDays.Desc>
+  <SL_ScorchedEarthCasualtyThreshold.Desc>Fraction of defenders lost before a base under the Scorched Earth doctrine starts burning its facilities while still fighting.</SL_ScorchedEarthCasualtyThreshold.Desc>
 </LanguageData>

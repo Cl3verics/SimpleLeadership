@@ -11,6 +11,7 @@ namespace SimpleLeadership
         public bool doctrinesGenerated;
         public Pawn actingLeader;
         public Pawn exLeader;
+        public List<Pawn> exBaseLeaders = [];
 
         public void ExposeData()
         {
@@ -19,6 +20,8 @@ namespace SimpleLeadership
             Scribe_Collections.Look(ref settlementLeaders, "settlementLeaders", LookMode.Reference, LookMode.Reference);
             Scribe_References.Look(ref actingLeader, "actingLeader");
             Scribe_References.Look(ref exLeader, "exLeader");
+            Scribe_Collections.Look(ref exBaseLeaders, "exBaseLeaders", LookMode.Reference);
+            exBaseLeaders ??= [];
         }
     }
 }

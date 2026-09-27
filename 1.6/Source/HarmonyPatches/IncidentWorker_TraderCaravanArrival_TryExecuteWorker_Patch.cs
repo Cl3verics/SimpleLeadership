@@ -13,6 +13,10 @@ namespace SimpleLeadership
             {
                 return false;
             }
+            var lastRaid = WorldComponent_LeaderTracker.Instance.lastPlayerRaidTick;
+            var cooldownTicks = SimpleLeadershipMod.Settings.absoluteBordersCooldownDays * GenDate.TicksPerDay;
+            if (parms.faction?.HasDoctrine(PowerEventDefOf.SL_AbsoluteBorders) is true && parms.target is Map map && map.IsPlayerHome && lastRaid > 0 && Find.TickManager.TicksGame - lastRaid < cooldownTicks)
+                return false;
             return true;
         }
 
