@@ -56,36 +56,47 @@ namespace SimpleLeadership
             var maxEvents = Mathf.Max(factionEventsCount, settlementEventsCount);
             var eventsSectionHeight = maxEvents == 0 ? 26f : maxEvents * 45f;
 
-            var bannerHeight = GetBannerHeight(faction, WindowWidth - 20f);
+            var hasDoctrines = SimpleLeadershipMod.Settings.enableDoctrines;
+            if (hasDoctrines is false)
+                curTab = TabMode.Leaders;
+
+            var bannerHeight = hasDoctrines ? GetBannerHeight(faction, WindowWidth - 20f) : 0f;
             var targetHeight = curTab == TabMode.Leaders
-                ? TabTopMargin + TabHeight + bannerHeight + 303f + eventsSectionHeight
+                ? (hasDoctrines ? TabTopMargin + TabHeight + bannerHeight + 4f + 8f : 0f) + 303f + eventsSectionHeight
                 : 450f;
             size = new Vector2(WindowWidth, Mathf.Min(targetHeight, UI.screenHeight - 80f));
 
             Widgets.DrawWindowBackground(new Rect(0f, 0f, size.x, size.y));
 
-            var tabBaseRect = new Rect(0f, TabTopMargin + TabHeight, size.x, size.y - TabTopMargin - TabHeight);
+            var tabTop = hasDoctrines ? TabTopMargin + TabHeight : 0f;
+            var tabBaseRect = new Rect(0f, tabTop, size.x, size.y - tabTop);
             var contentRect = tabBaseRect.ContractedBy(10f);
 
-            var tabs = new List<TabRecord>
+            if (hasDoctrines)
             {
-                new TabRecord("SL_LeadersTab".Translate(), () => curTab = TabMode.Leaders, curTab == TabMode.Leaders),
-                new TabRecord("SL_DoctrinesTab".Translate(), () => curTab = TabMode.Doctrines, curTab == TabMode.Doctrines)
-            };
-            TabDrawer.DrawTabs(tabBaseRect, tabs);
+                var tabs = new List<TabRecord>
+                {
+                    new TabRecord("SL_LeadersTab".Translate(), () => curTab = TabMode.Leaders, curTab == TabMode.Leaders),
+                    new TabRecord("SL_DoctrinesTab".Translate(), () => curTab = TabMode.Doctrines, curTab == TabMode.Doctrines)
+                };
+                TabDrawer.DrawTabs(tabBaseRect, tabs);
+            }
 
-            if (curTab == TabMode.Doctrines)
+            if (curTab == TabMode.Doctrines && hasDoctrines)
             {
                 FillDoctrinesTab(contentRect, faction, leaderTracker);
             }
             else
             {
                 var curY = contentRect.y;
-                DrawDoctrinesBanner(new Rect(contentRect.x, curY, contentRect.width, bannerHeight), faction);
-                curY += bannerHeight + 4f;
+                if (hasDoctrines)
+                {
+                    DrawDoctrinesBanner(new Rect(contentRect.x, curY, contentRect.width, bannerHeight), faction);
+                    curY += bannerHeight + 4f;
 
-                Widgets.DrawLineHorizontal(contentRect.x, curY, contentRect.width, Color.gray);
-                curY += 8f;
+                    Widgets.DrawLineHorizontal(contentRect.x, curY, contentRect.width, Color.gray);
+                    curY += 8f;
+                }
 
                 var columnWidth = (contentRect.width - ColumnSpacing) / 2f;
                 var colHeight = contentRect.yMax - curY;

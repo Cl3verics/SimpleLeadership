@@ -21,6 +21,7 @@ namespace SimpleLeadership
             Scribe_References.Look(ref actingLeader, "actingLeader");
             Scribe_References.Look(ref exLeader, "exLeader");
             Scribe_Collections.Look(ref exBaseLeaders, "exBaseLeaders", LookMode.Reference);
+            doctrines ??= [];
             exBaseLeaders ??= [];
         }
     }

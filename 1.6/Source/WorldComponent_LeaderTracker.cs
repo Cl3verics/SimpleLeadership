@@ -198,6 +198,8 @@ namespace SimpleLeadership
                 }
                 foreach (var kvp in leadershipData)
                 {
+                    kvp.Value.doctrines ??= [];
+                    kvp.Value.doctrines.RemoveAll(d => d?.def == null);
                     if (kvp.Key != null && kvp.Value.doctrinesGenerated is false)
                     {
                         GenerateDoctrinesFor(kvp.Key, kvp.Value);
@@ -419,6 +421,8 @@ namespace SimpleLeadership
 
         public void GenerateDoctrinesFor(Faction faction, FactionLeadershipData data)
         {
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false)
+                return;
             var allLeaders = new List<Pawn>();
             if (faction.leader != null) allLeaders.Add(faction.leader);
             allLeaders.AddRange(data.settlementLeaders.Values.Where(p => p != null).Distinct());
@@ -462,6 +466,8 @@ namespace SimpleLeadership
 
         public void StartInvestigation(Faction faction, FactionDoctrine doctrine)
         {
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false)
+                return;
             investigatingFaction = faction;
             activeInvestigation = doctrine.def;
             investigationEndTick = Find.TickManager.TicksGame + SimpleLeadershipMod.Settings.investigationDurationDays * GenDate.TicksPerDay;
@@ -493,23 +499,30 @@ namespace SimpleLeadership
 
         private void TickInvestigation()
         {
-            if (activeInvestigation == null || investigationEndTick < 0)
-                return;
-
-            if (Find.TickManager.TicksGame >= investigationEndTick)
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false)
             {
-                var faction = investigatingFaction;
-                var doctrine = ResolveActiveDoctrine();
-                CancelInvestigation();
-                if (doctrine == null)
+                if (activeInvestigation != null)
+                    CancelInvestigation();
+            }
+            else
+            {
+                if (activeInvestigation == null || investigationEndTick < 0)
                     return;
-                doctrine.isInvestigated = true;
-                var text = "SL_InvestigationCompletedDesc".Translate(doctrine.def.label, faction.NameColored, doctrine.proposedBy != null ? doctrine.proposedBy.LabelShortCap : "SL_NotAvailable".Translate().ToString());
-                var homeSettlement = Find.WorldObjects.Settlements.FirstOrDefault(s => s.Faction == faction);
-                if (homeSettlement != null)
-                    Find.LetterStack.ReceiveLetter("SL_InvestigationCompletedLabel".Translate(), text, LetterDefOf.PositiveEvent, homeSettlement, faction);
-                else
-                    Find.LetterStack.ReceiveLetter("SL_InvestigationCompletedLabel".Translate(), text, LetterDefOf.PositiveEvent);
+                if (Find.TickManager.TicksGame >= investigationEndTick)
+                {
+                    var faction = investigatingFaction;
+                    var doctrine = ResolveActiveDoctrine();
+                    CancelInvestigation();
+                    if (doctrine == null)
+                        return;
+                    doctrine.isInvestigated = true;
+                    var text = "SL_InvestigationCompletedDesc".Translate(doctrine.def.label, faction.NameColored, doctrine.proposedBy != null ? doctrine.proposedBy.LabelShortCap : "SL_NotAvailable".Translate().ToString());
+                    var homeSettlement = Find.WorldObjects.Settlements.FirstOrDefault(s => s.Faction == faction);
+                    if (homeSettlement != null)
+                        Find.LetterStack.ReceiveLetter("SL_InvestigationCompletedLabel".Translate(), text, LetterDefOf.PositiveEvent, homeSettlement, faction);
+                    else
+                        Find.LetterStack.ReceiveLetter("SL_InvestigationCompletedLabel".Translate(), text, LetterDefOf.PositiveEvent);
+                }
             }
         }
 
@@ -529,7 +542,7 @@ namespace SimpleLeadership
 
         public void Notify_LeaderLost(Faction faction, Pawn lostLeader)
         {
-            if (faction == null || lostLeader == null)
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false || faction == null || lostLeader == null)
                 return;
             var data = GetLeadershipDataFor(faction);
             if (data == null)

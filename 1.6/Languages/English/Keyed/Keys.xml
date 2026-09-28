@@ -81,6 +81,8 @@
   <SL_BasesUnderLeader>Bases under this leader:</SL_BasesUnderLeader>
 
   <SL_DoctrinesSettings>Doctrines</SL_DoctrinesSettings>
+  <SL_EnableDoctrines>Enable doctrines</SL_EnableDoctrines>
+  <SL_EnableDoctrines.Desc>If disabled, factions will not generate or use doctrines. Existing doctrines are preserved while disabled and resume if re-enabled.</SL_EnableDoctrines.Desc>
   <SL_MaxDoctrinesPerFaction>Max starting doctrines</SL_MaxDoctrinesPerFaction>
   <SL_InvestigationDurationDays>Investigation duration (days)</SL_InvestigationDurationDays>
   <SL_AbsoluteBordersCooldownDays>Absolute Borders cooldown (days)</SL_AbsoluteBordersCooldownDays>

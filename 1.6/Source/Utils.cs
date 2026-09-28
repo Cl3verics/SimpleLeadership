@@ -40,17 +40,25 @@ namespace SimpleLeadership
 
         public static bool HasDoctrine(this Faction faction, DoctrineDef def)
         {
-            if (faction == null)
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false || faction == null)
                 return false;
-            var data = WorldComponent_LeaderTracker.Instance.GetLeadershipDataFor(faction);
-            return data?.doctrines.Any(d => d.def == def) is true;
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            var data = tracker.GetLeadershipDataFor(faction);
+            if (data == null)
+                return false;
+            if (data.doctrinesGenerated is false)
+                tracker.GenerateDoctrinesFor(faction, data);
+            return data.doctrines.Any(d => d.def == def);
         }
 
         public static List<FactionDoctrine> GetDoctrines(this Faction faction)
         {
-            if (faction == null)
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false || faction == null)
                 return [];
-            var data = WorldComponent_LeaderTracker.Instance.GetLeadershipDataFor(faction);
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            var data = tracker.GetLeadershipDataFor(faction);
+            if (data != null && data.doctrinesGenerated is false)
+                tracker.GenerateDoctrinesFor(faction, data);
             return data?.doctrines ?? [];
         }
 

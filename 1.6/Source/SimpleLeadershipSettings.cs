@@ -29,98 +29,122 @@ namespace SimpleLeadership
         public int basesPerLeader = 5;
 
         [Header("SL_DoctrinesSettings")]
+        [Label("SL_EnableDoctrines")]
+        public bool enableDoctrines = true;
+
         [Label("SL_MaxDoctrinesPerFaction")]
+        [DrawIf("enableDoctrines")]
         [Range(1, 6)]
         [Step(1f)]
         public int maxDoctrinesPerFaction = 3;
 
         [Label("SL_InvestigationDurationDays")]
+        [DrawIf("enableDoctrines")]
         [Range(1, 30)]
         [Step(1f)]
         public int investigationDurationDays = 8;
 
         [Label("SL_AbsoluteBordersCooldownDays")]
+        [DrawIf("enableDoctrines")]
         [Range(1, 60)]
         [Step(1f)]
         public int absoluteBordersCooldownDays = 15;
 
         [Label("SL_LeaderLegacyDurationMultiplier")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float leaderLegacyDurationMultiplier = 0.5f;
 
         [Label("SL_InterventionRaidChance")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float interventionRaidChance = 0.35f;
 
         [Label("SL_InterventionRaidDelayHours")]
+        [DrawIf("enableDoctrines")]
         [Range(0.1f, 12f)]
         [Step(0.1f)]
         public float interventionRaidDelayHours = 0.8f;
 
         [Label("SL_InterventionRaidCooldownDays")]
+        [DrawIf("enableDoctrines")]
         [Range(1f, 30f)]
         [Step(1f)]
         public float interventionRaidCooldownDays = 1f;
 
         [Label("SL_MutualDefenseChance")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float mutualDefenseRetaliationChance = 0.4f;
 
         [Label("SL_MutualDefenseDelayHours")]
+        [DrawIf("enableDoctrines")]
         [Range(0.1f, 12f)]
         [Step(0.1f)]
         public float mutualDefenseRetaliationDelayHours = 1.5f;
 
         [Label("SL_MutualDefenseCooldownDays")]
+        [DrawIf("enableDoctrines")]
         [Range(1f, 30f)]
         [Step(1f)]
         public float mutualDefenseCooldownDays = 5f;
 
         [Label("SL_ForcesPreservationMultiplier")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float forcesPreservationRetreatMultiplier = 0.5f;
 
         [Label("SL_HitAndRunCasualtyThreshold")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float hitAndRunCasualtyThreshold = 0.2f;
 
         [Label("SL_HitAndRunRegroupPointMultiplier")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float hitAndRunRegroupPointMultiplier = 0.8f;
 
         [Label("SL_HitAndRunRegroupDelayHours")]
+        [DrawIf("enableDoctrines")]
         [Range(1f, 24f)]
         [Step(0.5f)]
         public float hitAndRunRegroupDelayHours = 6f;
 
         [Label("SL_HitAndRunLockoutDays")]
+        [DrawIf("enableDoctrines")]
         [Range(1f, 15f)]
         [Step(1f)]
         public float hitAndRunLockoutDays = 5f;
 
         [Label("SL_AttritionSiegeChance")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float attritionSiegeChance = 0.75f;
 
         [Label("SL_NoMercyExecutionRange")]
+        [DrawIf("enableDoctrines")]
         [Range(5f, 30f)]
         [Step(1f)]
         public float noMercyExecutionRange = 15f;
 
         [Label("SL_ScorchedEarthMaxFires")]
+        [DrawIf("enableDoctrines")]
         [Range(1, 30)]
         [Step(1f)]
         public int scorchedEarthMaxFires = 10;
 
         [Label("SL_ScorchedEarthCasualtyThreshold")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float scorchedEarthCasualtyThreshold = 0.5f;
 
         [Label("SL_GraciousRepatriationMultiplier")]
+        [DrawIf("enableDoctrines")]
         [Percentage]
         public float graciousRepatriationGoodwillMultiplier = 0.5f;
 
         [Label("SL_FallenVenerationCorpseGoodwill")]
+        [DrawIf("enableDoctrines")]
         [Range(1, 10)]
         [Step(1f)]
         public int fallenVenerationCorpseGoodwill = 2;
