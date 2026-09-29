@@ -59,8 +59,8 @@
   <SL_PlacedBy>Placed by {0}</SL_PlacedBy>
   <SL_PlacedByUnknown>Placed by unknown person</SL_PlacedByUnknown>
   <SL_UnknownProposerDesc>The identity of the person proposed this doctrine is unknown.</SL_UnknownProposerDesc>
-  <SL_InvestigateBtn>INVESTIGATE</SL_InvestigateBtn>
-  <SL_CancelInvestigation>CANCEL INVESTIGATION</SL_CancelInvestigation>
+  <SL_InvestigateBtn>Investigate</SL_InvestigateBtn>
+  <SL_CancelInvestigation>Cancel investigation</SL_CancelInvestigation>
   <SL_InvestigateNotice>Investigating will take {0} days. You can only investigate one doctrine at a time.</SL_InvestigateNotice>
   <SL_ConcludesIn>Concludes in {0}</SL_ConcludesIn>
   <SL_InvestigationInProgressWarning>You are currently investigating this doctrine. Progress will not be saved upon cancellation.</SL_InvestigationInProgressWarning>
@@ -68,15 +68,15 @@
   <SL_JumpToBaseBtn>Jump to {0}</SL_JumpToBaseBtn>
   <SL_ActiveModifiers>Active Modifiers:
 {0}</SL_ActiveModifiers>
-  <SL_InvestigationCompletedLabel>Doctrine Investigated</SL_InvestigationCompletedLabel>
-  <SL_InvestigationCompletedDesc>Investigation concluded! {2} proposed the {0} doctrine for {1}.</SL_InvestigationCompletedDesc>
-  <SL_LeaderDoctrinesLost>Leader {0} Doctrines are no longer applying to {1}: {2}</SL_LeaderDoctrinesLost>
-  <SL_AbsoluteBordersCannotTrade>Cannot trade with this faction. Their borders are closed due to recent hostilities.</SL_AbsoluteBordersCannotTrade>
+  <SL_InvestigationCompletedLabel>Doctrine investigated</SL_InvestigationCompletedLabel>
+  <SL_InvestigationCompletedDesc>Investigation concluded! {2} proposed the {0} for {1}.</SL_InvestigationCompletedDesc>
+  <SL_LeaderDoctrinesLost>Leader {0} doctrines are no longer applying to {1}: {2}</SL_LeaderDoctrinesLost>
+  <SL_AbsoluteBordersCannotTrade>Cannot trade, borders are closed due to recent hostilities</SL_AbsoluteBordersCannotTrade>
   <SL_HitAndRunRegrouping>{0} forces are retreating to regroup for another assault!</SL_HitAndRunRegrouping>
   <SL_ScorchedEarthTriggered>{0} defenders are destroying valuable facilities as they abandon the base!</SL_ScorchedEarthTriggered>
-  <SL_InterventionRaidLetterLabel>Intervention Raid</SL_InterventionRaidLetterLabel>
+  <SL_InterventionRaidLetterLabel>Intervention raid</SL_InterventionRaidLetterLabel>
   <SL_InterventionRaidLetterBody>{0} has dispatched a raid to eliminate the visiting {1} caravan!</SL_InterventionRaidLetterBody>
-  <SL_MutualDefenseLetterLabel>Retaliation Raid</SL_MutualDefenseLetterLabel>
+  <SL_MutualDefenseLetterLabel>Retaliation raid</SL_MutualDefenseLetterLabel>
   <SL_MutualDefenseLetterBody>{0} has declared a retaliation raid following your aggression against their allies, {1}!</SL_MutualDefenseLetterBody>
   <SL_BasesUnderLeader>Bases under this leader:</SL_BasesUnderLeader>
 
@@ -85,26 +85,26 @@
   <SL_EnableDoctrines.Desc>If disabled, factions will not generate or use doctrines. Existing doctrines are preserved while disabled and resume if re-enabled.</SL_EnableDoctrines.Desc>
   <SL_MaxDoctrinesPerFaction>Max starting doctrines</SL_MaxDoctrinesPerFaction>
   <SL_InvestigationDurationDays>Investigation duration (days)</SL_InvestigationDurationDays>
-  <SL_AbsoluteBordersCooldownDays>Absolute Borders cooldown (days)</SL_AbsoluteBordersCooldownDays>
-  <SL_LeaderLegacyDurationMultiplier>Leader's Legacy duration factor</SL_LeaderLegacyDurationMultiplier>
+  <SL_AbsoluteBordersCooldownDays>Absolute borders cooldown (days)</SL_AbsoluteBordersCooldownDays>
+  <SL_LeaderLegacyDurationMultiplier>Leader's legacy duration factor</SL_LeaderLegacyDurationMultiplier>
   <SL_InterventionRaidChance>Intervention raid chance</SL_InterventionRaidChance>
   <SL_InterventionRaidDelayHours>Intervention raid delay (hours)</SL_InterventionRaidDelayHours>
   <SL_InterventionRaidCooldownDays>Intervention raid cooldown (days)</SL_InterventionRaidCooldownDays>
-  <SL_MutualDefenseChance>Mutual Defense retaliation chance</SL_MutualDefenseChance>
-  <SL_MutualDefenseDelayHours>Mutual Defense delay (hours)</SL_MutualDefenseDelayHours>
-  <SL_MutualDefenseCooldownDays>Mutual Defense cooldown (days)</SL_MutualDefenseCooldownDays>
+  <SL_MutualDefenseChance>Mutual defense retaliation chance</SL_MutualDefenseChance>
+  <SL_MutualDefenseDelayHours>Mutual defense delay (hours)</SL_MutualDefenseDelayHours>
+  <SL_MutualDefenseCooldownDays>Mutual defense cooldown (days)</SL_MutualDefenseCooldownDays>
   <SL_MutualDefenseCooldownDays.Desc>Minimum cooldown between Mutual Defense retaliation raids.</SL_MutualDefenseCooldownDays.Desc>
-  <SL_ForcesPreservationMultiplier>Forces Preservation retreat threshold factor</SL_ForcesPreservationMultiplier>
-  <SL_HitAndRunCasualtyThreshold>Hit and Run casualty threshold</SL_HitAndRunCasualtyThreshold>
-  <SL_HitAndRunRegroupPointMultiplier>Hit and Run regroup threat factor</SL_HitAndRunRegroupPointMultiplier>
-  <SL_HitAndRunRegroupDelayHours>Hit and Run regroup delay (hours)</SL_HitAndRunRegroupDelayHours>
-  <SL_HitAndRunLockoutDays>Hit and Run lockout duration (days)</SL_HitAndRunLockoutDays>
-  <SL_AttritionSiegeChance>Attrition Warfare siege chance</SL_AttritionSiegeChance>
-  <SL_NoMercyExecutionRange>No Mercy execution range</SL_NoMercyExecutionRange>
-  <SL_ScorchedEarthMaxFires>Scorched Earth max fires</SL_ScorchedEarthMaxFires>
-  <SL_ScorchedEarthCasualtyThreshold>Scorched Earth casualty threshold</SL_ScorchedEarthCasualtyThreshold>
-  <SL_GraciousRepatriationMultiplier>Gracious Repatriation goodwill bonus</SL_GraciousRepatriationMultiplier>
-  <SL_FallenVenerationCorpseGoodwill>Fallen Veneration corpse goodwill</SL_FallenVenerationCorpseGoodwill>
+  <SL_ForcesPreservationMultiplier>Forces preservation retreat threshold factor</SL_ForcesPreservationMultiplier>
+  <SL_HitAndRunCasualtyThreshold>Hit and run casualty threshold</SL_HitAndRunCasualtyThreshold>
+  <SL_HitAndRunRegroupPointMultiplier>Hit and run regroup threat factor</SL_HitAndRunRegroupPointMultiplier>
+  <SL_HitAndRunRegroupDelayHours>Hit and run regroup delay (hours)</SL_HitAndRunRegroupDelayHours>
+  <SL_HitAndRunLockoutDays>Hit and run lockout duration (days)</SL_HitAndRunLockoutDays>
+  <SL_AttritionSiegeChance>Attrition warfare siege chance</SL_AttritionSiegeChance>
+  <SL_NoMercyExecutionRange>No mercy execution range</SL_NoMercyExecutionRange>
+  <SL_ScorchedEarthMaxFires>Scorched earth max fires</SL_ScorchedEarthMaxFires>
+  <SL_ScorchedEarthCasualtyThreshold>Scorched earth casualty threshold</SL_ScorchedEarthCasualtyThreshold>
+  <SL_GraciousRepatriationMultiplier>Gracious repatriation goodwill bonus</SL_GraciousRepatriationMultiplier>
+  <SL_FallenVenerationCorpseGoodwill>Fallen veneration corpse goodwill</SL_FallenVenerationCorpseGoodwill>
   <SL_MaxDoctrinesPerFaction.Desc>Maximum number of doctrines randomly assigned to a faction when its leadership is first generated.</SL_MaxDoctrinesPerFaction.Desc>
   <SL_InvestigationDurationDays.Desc>How many days an investigation takes before the origin of a doctrine is revealed.</SL_InvestigationDurationDays.Desc>
   <SL_AbsoluteBordersCooldownDays.Desc>How long factions with the Absolute Borders doctrine will refuse trade after you raid one of their settlements.</SL_AbsoluteBordersCooldownDays.Desc>

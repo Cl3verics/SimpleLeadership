@@ -133,6 +133,7 @@ public class Dialog_SelectPawn : Window
                         if (pawnFaction?.leader == pawn)
                         {
                             pawnFaction.leader = leader;
+                            Utils.EnsureRoyalLeaderStatus(pawnFaction, leader);
                         }
                         else
                         {
@@ -152,6 +153,7 @@ public class Dialog_SelectPawn : Window
                         handleOldLeader(oldLeader);
 
                         selObject.Faction.leader = pawn;
+                        Utils.EnsureRoyalLeaderStatus(selObject.Faction, pawn);
                         if (oldLeader != null && oldLeader != pawn)
                             WorldComponent_LeaderTracker.Instance.Notify_LeaderLost(selObject.Faction, oldLeader);
                     }

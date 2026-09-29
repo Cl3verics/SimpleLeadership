@@ -185,7 +185,7 @@ namespace SimpleLeadership
                     var textRect = new Rect(rowRect.x + 6f, rowRect.y + 2f, rowRect.width - 12f, 20f);
                     Text.Font = GameFont.Small;
                     GUI.color = doc.def.categoryColor;
-                    Widgets.Label(textRect, doc.def.label);
+                    Widgets.Label(textRect, doc.def.label.CapitalizeFirst());
                     GUI.color = Color.white;
 
                     var subRect = new Rect(rowRect.x + 6f, rowRect.y + 22f, rowRect.width - 12f, 18f);
@@ -212,7 +212,7 @@ namespace SimpleLeadership
             var curY = rect.y;
 
             Text.Font = GameFont.Medium;
-            var titleText = doc.def.label.ToUpper();
+            var titleText = doc.def.label.CapitalizeFirst();
             var titleHeight = Text.CalcHeight(titleText, rect.width);
             GUI.color = doc.def.categoryColor;
             Widgets.Label(new Rect(rect.x, curY, rect.width, titleHeight), titleText);
@@ -364,7 +364,7 @@ namespace SimpleLeadership
                     GUI.color = doc.def.categoryColor;
                     Text.Font = GameFont.Small;
                     Text.Anchor = TextAnchor.MiddleLeft;
-                    Widgets.Label(barRect.ContractedBy(6f, 0f), doc.def.ShortLabel);
+                    Widgets.Label(barRect.ContractedBy(6f, 0f), doc.def.ShortLabel.CapitalizeFirst());
                     Text.Anchor = TextAnchor.UpperLeft;
                     GUI.color = Color.white;
                     if (Mouse.IsOver(barRect))

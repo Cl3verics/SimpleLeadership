@@ -62,6 +62,7 @@ namespace SimpleLeadership
 
             if (newLeader != null)
             {
+                Utils.EnsureRoyalLeaderStatus(faction, newLeader);
                 var label = "SL_PowerVoidEndedLetterLabel".Translate(faction.Named("FACTION"));
                 var body = "SL_NewLeaderElectedLetterBody".Translate(newLeader.Named("PAWN"));
                 Find.LetterStack.ReceiveLetter(label, body, LetterDefOf.NeutralEvent, newLeader, faction);

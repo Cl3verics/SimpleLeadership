@@ -14,14 +14,14 @@ namespace SimpleLeadership
             if (RaidContext.CurrentOrigin != null)
             {
                 var coloredBaseName = RaidContext.CurrentOrigin.Label.Colorize(ColorLibrary.RedReadable);
-                __result += "\n\n" + "SL_RaidOriginInfo".Translate(coloredBaseName);
+                __result += "\n\n" + "SL_RaidOriginInfo".Translate(coloredBaseName).Resolve();
             }
 
             var doctrines = parms.faction.GetDoctrines().Where(d => d.def.affectsRaidBehavior).ToList();
             if (doctrines.Count > 0)
             {
-                var formatted = string.Join(", ", doctrines.Select(d => d.def.ShortLabel.Colorize(d.def.categoryColor)));
-                __result += "\n\n" + "SL_ActiveModifiers".Translate(formatted);
+                var formatted = string.Join(", ", doctrines.Select(d => d.def.ShortLabel.CapitalizeFirst().Colorize(d.def.categoryColor)));
+                __result += "\n\n" + "SL_ActiveModifiers".Translate(formatted).Resolve();
             }
 
             if (RaidContext.CurrentOrigin != null)
@@ -30,7 +30,7 @@ namespace SimpleLeadership
                 if (baseLeader != null && pawns.Contains(baseLeader))
                 {
                     var coloredLeaderName = baseLeader.LabelShort.Colorize(ColoredText.NameColor);
-                    __result += "\n\n" + "SL_RaidOriginLeaderInfo".Translate(coloredLeaderName);
+                    __result += "\n\n" + "SL_RaidOriginLeaderInfo".Translate(coloredLeaderName).Resolve();
                 }
             }
         }

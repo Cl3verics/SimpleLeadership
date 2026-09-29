@@ -189,5 +189,51 @@ namespace SimpleLeadership
             Find.LetterStack.ReceiveLetter("SL_InterventionRaidLetterLabel".Translate(), "SL_InterventionRaidLetterBody".Translate(hostileInterventionist.NameColored, visitingFaction.NameColored), LetterDefOf.ThreatBig);
         }
 
+        public static void EnsureRoyalLeaderStatus(Faction faction, Pawn pawn)
+        {
+            if (ModLister.RoyaltyInstalled is false || faction == null || pawn == null || pawn.royalty == null
+                || pawn.royalty.AllTitlesForReading.Count > 0 || faction.def.HasRoyalTitles is false)
+                return;
+
+            var leaderKinds = LeaderKindsFor(faction);
+            if (leaderKinds.Count == 0)
+                return;
+
+            var title = leaderKinds.FirstOrDefault(k => k.titleRequired != null)?.titleRequired
+                ?? faction.def.RoyalTitlesAwardableInSeniorityOrderForReading.LastOrDefault();
+            if (title == null)
+                return;
+
+            pawn.royalty.SetTitle(faction, title, grantRewards: false);
+            PawnGenerator.PurchasePermits(pawn, faction);
+            var nextTitle = title.GetNextTitle(faction);
+            pawn.royalty.SetFavor(faction, nextTitle != null ? Rand.Range(0, nextTitle.favorCost - 1) : 0);
+
+            if (title.maxPsylinkLevel > 0)
+            {
+                var amplifier = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PsychicAmplifier) as Hediff_Level;
+                if (amplifier == null)
+                {
+                    amplifier = HediffMaker.MakeHediff(HediffDefOf.PsychicAmplifier, pawn, pawn.health.hediffSet.GetBrain()) as Hediff_Level;
+                    pawn.health.AddHediff(amplifier);
+                }
+                if (amplifier.level < title.maxPsylinkLevel)
+                    amplifier.SetLevelTo(title.maxPsylinkLevel);
+            }
+
+            var leaderKind = leaderKinds.FirstOrDefault(k => k.titleRequired == title) ?? leaderKinds.RandomElement();
+            pawn.apparel.DestroyAll();
+            PawnApparelGenerator.GenerateStartingApparelFor(pawn, new PawnGenerationRequest(leaderKind, faction, PawnGenerationContext.NonPlayer, forceGenerateNewPawn: true));
+        }
+
+        public static List<PawnKindDef> LeaderKindsFor(Faction faction)
+        {
+            var kinds = new List<PawnKindDef>();
+            foreach (var groupMaker in faction.def.pawnGroupMakers.Where(g => g.kindDef == PawnGroupKindDefOf.Combat))
+                kinds.AddRange(groupMaker.options.Where(o => o.kind.factionLeader).Select(o => o.kind));
+            if (faction.def.fixedLeaderKinds != null)
+                kinds.AddRange(faction.def.fixedLeaderKinds);
+            return kinds;
+        }
     }
 }

@@ -3,8 +3,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_FinalPrice</defName>
-    <label>Final Price Doctrine</label>
-    <shortLabel>Final Price</shortLabel>
+    <label>Final price doctrine</label>
+    <shortLabel>Final price</shortLabel>
     <affectsRaidBehavior>true</affectsRaidBehavior>
     <description>Every soldier who takes up arms does so knowing the cost. Those who give their lives for our survival will earn a place among the heroes whose names echo across the stars for generations to come.</description>
     <categoryColor>(0.85, 0.25, 0.25)</categoryColor>
@@ -19,7 +19,7 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_Intervention</defName>
-    <label>Intervention Doctrine</label>
+    <label>Intervention doctrine</label>
     <shortLabel>Intervention</shortLabel>
     <description>Those who support our enemies will not know peace.</description>
     <categoryColor>(0.85, 0.25, 0.25)</categoryColor>
@@ -30,8 +30,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_ScorchedEarth</defName>
-    <label>Scorched Earth Doctrine</label>
-    <shortLabel>Scorched Earth</shortLabel>
+    <label>Scorched earth doctrine</label>
+    <shortLabel>Scorched earth</shortLabel>
     <description>If we cannot hold what is ours, neither will the enemy.</description>
     <categoryColor>(0.85, 0.25, 0.25)</categoryColor>
     <effects>
@@ -41,8 +41,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_NoMercy</defName>
-    <label>No Mercy Doctrine</label>
-    <shortLabel>No Mercy</shortLabel>
+    <label>No mercy doctrine</label>
+    <shortLabel>No mercy</shortLabel>
     <affectsRaidBehavior>true</affectsRaidBehavior>
     <description>We will not spare the lives of our enemies, those who fall will be eliminated.</description>
     <categoryColor>(0.85, 0.25, 0.25)</categoryColor>
@@ -56,8 +56,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_ForcesPreservation</defName>
-    <label>Forces Preservation Doctrine</label>
-    <shortLabel>Forces Preservation</shortLabel>
+    <label>Forces preservation doctrine</label>
+    <shortLabel>Forces preservation</shortLabel>
     <affectsRaidBehavior>true</affectsRaidBehavior>
     <description>There is a time and place to give your life in service of a cause. We cannot afford to squander the lives of our people.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
@@ -72,8 +72,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_HitAndRun</defName>
-    <label>Hit and Run Doctrine</label>
-    <shortLabel>Hit and Run</shortLabel>
+    <label>Hit and run doctrine</label>
+    <shortLabel>Hit and run</shortLabel>
     <affectsRaidBehavior>true</affectsRaidBehavior>
     <description>Striking multiple times gives us the advantage in combat.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
@@ -89,8 +89,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_FamilialSuccession</defName>
-    <label>Familial Succession Doctrine</label>
-    <shortLabel>Familial Succession</shortLabel>
+    <label>Familial succession doctrine</label>
+    <shortLabel>Familial succession</shortLabel>
     <description>Our family tree holds strong ties to our leadership, and they shall arise to the occasion.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
     <effects>
@@ -100,7 +100,7 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_GraciousRepatriation</defName>
-    <label>Gracious Repatriation</label>
+    <label>Gracious repatriation</label>
     <description>We welcome the return of our kin, we could have lost them forever.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
     <conflictingDoctrines>
@@ -114,7 +114,7 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_FallenVeneration</defName>
-    <label>Fallen Veneration</label>
+    <label>Fallen veneration</label>
     <description>Giving our people a proper send-off is imperative.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
     <effects>
@@ -124,8 +124,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_LeadersLegacy</defName>
-    <label>Leader's Legacy</label>
-    <shortLabel>Leader's Legacy</shortLabel>
+    <label>Leader's legacy</label>
+    <shortLabel>Leader's legacy</shortLabel>
     <description>The fall of our leaders only embolden us to push forward and become stronger!</description>
     <categoryColor>(0.9, 0.8, 0.2)</categoryColor>
     <effects>
@@ -136,8 +136,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_AbsoluteBorders</defName>
-    <label>Absolute Borders Doctrine</label>
-    <shortLabel>Absolute Borders</shortLabel>
+    <label>Absolute borders doctrine</label>
+    <shortLabel>Absolute borders</shortLabel>
     <description>Foreign borders are sacred. Aggression against another faction is condemned regardless of justification.</description>
     <categoryColor>(0.9, 0.8, 0.2)</categoryColor>
     <effects>
@@ -147,8 +147,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_DefenseInDepth</defName>
-    <label>Defense in Depth Doctrine</label>
-    <shortLabel>Defense in Depth</shortLabel>
+    <label>Defense in depth doctrine</label>
+    <shortLabel>Defense in depth</shortLabel>
     <description>Let the enemy come to us, we will not abandon our defenses.</description>
     <categoryColor>(0.9, 0.8, 0.2)</categoryColor>
     <conflictingDoctrines>
@@ -161,8 +161,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_AttritionWarfare</defName>
-    <label>Attrition Warfare Doctrine</label>
-    <shortLabel>Attrition Warfare</shortLabel>
+    <label>Attrition warfare doctrine</label>
+    <shortLabel>Attrition warfare</shortLabel>
     <affectsRaidBehavior>true</affectsRaidBehavior>
     <description>Our enemy will fall under our superior production power.</description>
     <categoryColor>(0.9, 0.8, 0.2)</categoryColor>
@@ -174,8 +174,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_MutualDefense</defName>
-    <label>Mutual Defense Doctrine</label>
-    <shortLabel>Mutual Defense</shortLabel>
+    <label>Mutual defense doctrine</label>
+    <shortLabel>Mutual defense</shortLabel>
     <description>An attack upon one of our allies is an attack upon us all.</description>
     <categoryColor>(0.9, 0.8, 0.2)</categoryColor>
     <effects>
