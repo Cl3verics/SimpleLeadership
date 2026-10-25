@@ -38,7 +38,9 @@ namespace SimpleLeadership
             {
                 return;
             }
-            var originSettlement = ChosenOriginSettlement ?? FindMostLikelyOriginSettlement(parms.faction, parms.target);
+            var originSettlement = ChosenOriginSettlement != null && ChosenOriginSettlement.Faction == parms.faction
+                ? ChosenOriginSettlement
+                : FindMostLikelyOriginSettlement(parms.faction, parms.target);
             ChosenOriginSettlement = null;
             RaidContext.CurrentOrigin = originSettlement;
 

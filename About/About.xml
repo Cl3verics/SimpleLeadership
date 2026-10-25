@@ -6,6 +6,7 @@
     <description>With Simple Leadership, you are given the ability to track Faction Leadership and Base Leadership. These leaders are generated with your world pawns, to give your planet more life and lets you assign faces to your enemies and allies.</description>
     <supportedVersions>
         <li>1.6</li>
+        <li>1.7</li>
     </supportedVersions>
     <loadAfter>
         <li>Ludeon.RimWorld</li>

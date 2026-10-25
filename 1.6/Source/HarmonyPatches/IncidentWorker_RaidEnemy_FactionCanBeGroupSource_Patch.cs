@@ -12,7 +12,7 @@ namespace SimpleLeadership
     {
         public static void Postfix(ref bool __result, Faction f, IncidentParms parms, bool desperate = false)
         {
-            if (__result is false || f == null || desperate) return;
+            if (__result is false || f == null) return;
 
             if (f.IsInPowerEvent<PowerVoid>())
             {
@@ -20,6 +20,7 @@ namespace SimpleLeadership
             }
             else
             {
+                if (desperate) return;
                 var playerBases = Find.WorldObjects.Settlements
                     .Where(s => s.Faction == Faction.OfPlayer).ToList();
                 if (playerBases.Count == 0) return;

@@ -13,17 +13,18 @@ namespace SimpleLeadership
         {
             if (lord.faction.HasDoctrine(PowerEventDefOf.SL_ScorchedEarth) && lord.LordJob is LordJob_DefendBase && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0 && (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= SimpleLeadershipMod.Settings.scorchedEarthCasualtyThreshold)
                 Lord_GotoToil_Patch.TryTriggerScorchedEarth(lord);
-            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_FinalPrice) && lord.LordJob is LordJob_AssaultColony or LordJob_DefendBase)
+            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_FinalPrice) && lord.LordJob is LordJob_AssaultColony or LordJob_DefendBase or LordJob_Siege or LordJob_AssaultThings
+                || lord.faction.HasDoctrine(PowerEventDefOf.SL_DefenseInDepth) && lord.LordJob is LordJob_DefendBase)
             {
                 __result = false;
                 return false;
             }
-            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_ForcesPreservation) && lord.LordJob is LordJob_AssaultColony or LordJob_DefendBase && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0)
+            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_ForcesPreservation) && lord.LordJob is LordJob_AssaultColony or LordJob_DefendBase or LordJob_Siege or LordJob_AssaultThings && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0)
             {
                 __result = (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= __instance.fraction * SimpleLeadershipMod.Settings.forcesPreservationRetreatMultiplier;
                 return false;
             }
-            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_HitAndRun) && lord.LordJob is LordJob_AssaultColony && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0 && (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= SimpleLeadershipMod.Settings.hitAndRunCasualtyThreshold)
+            if (lord.faction.HasDoctrine(PowerEventDefOf.SL_HitAndRun) && lord.LordJob is LordJob_AssaultColony or LordJob_Siege && signal.type == TriggerSignalType.PawnLost && lord.numPawnsEverGained > 0 && (float)lord.numPawnsLostViolently / lord.numPawnsEverGained >= SimpleLeadershipMod.Settings.hitAndRunCasualtyThreshold)
             {
                 var comp = lord.Map.GetComponent<MapComponent_DelayedRaid>();
                 if (Find.TickManager.TicksGame >= comp.hitAndRunLockoutTick)

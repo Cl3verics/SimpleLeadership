@@ -9,12 +9,14 @@ namespace SimpleLeadership
         public int fireTick = -1;
         public string tag;
         public IncidentParms parms;
+        public Faction targetFaction;
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref fireTick, "fireTick", -1);
             Scribe_Values.Look(ref tag, "tag");
             Scribe_Deep.Look(ref parms, "parms");
+            Scribe_References.Look(ref targetFaction, "targetFaction");
         }
     }
 
@@ -28,13 +30,14 @@ namespace SimpleLeadership
 
         public MapComponent_DelayedRaid(Map map) : base(map) { }
 
-        public void Schedule(IncidentParms parms, int delayTicks, string tag = null)
+        public void Schedule(IncidentParms parms, int delayTicks, string tag = null, Faction targetFaction = null)
         {
             scheduledRaids.Add(new ScheduledDelayedRaid
             {
                 parms = parms,
                 tag = tag,
-                fireTick = Find.TickManager.TicksGame + delayTicks
+                fireTick = Find.TickManager.TicksGame + delayTicks,
+                targetFaction = targetFaction
             });
         }
 
@@ -46,7 +49,15 @@ namespace SimpleLeadership
                 if (Find.TickManager.TicksGame >= entry.fireTick)
                 {
                     scheduledRaids.RemoveAt(i);
-                    IncidentDefOf.RaidEnemy.Worker.TryExecute(entry.parms);
+                    RaidContext.InterventionTargetFaction = entry.targetFaction;
+                    try
+                    {
+                        IncidentDefOf.RaidEnemy.Worker.TryExecute(entry.parms);
+                    }
+                    finally
+                    {
+                        RaidContext.InterventionTargetFaction = null;
+                    }
                 }
             }
         }

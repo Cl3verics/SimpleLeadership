@@ -100,7 +100,8 @@
 
   <SimpleLeadership.DoctrineDef>
     <defName>SL_GraciousRepatriation</defName>
-    <label>Gracious repatriation</label>
+    <label>Gracious reparations doctrine</label>
+    <shortLabel>Gracious reparations</shortLabel>
     <description>We welcome the return of our kin, we could have lost them forever.</description>
     <categoryColor>(0.35, 0.8, 0.35)</categoryColor>
     <conflictingDoctrines>

@@ -10,8 +10,17 @@ namespace SimpleLeadership
     public static class SettlementUtility_AffectRelationsOnAttacked_Patch
     {
         private const int MutualDefenseHostilityDrop = -100;
-        public static void Postfix(MapParent mapParent)
+        private const string ReinforceRaidTag = "Reinforce";
+        private const int ReinforceRaidDelayTicks = 5000;
+        public static void Postfix(MapParent mapParent, ref TaggedString letterText)
         {
+            if (mapParent?.Faction is { } attackedFaction && attackedFaction != Faction.OfPlayer)
+            {
+                var modifiersText = Utils.GetActiveModifiersText(attackedFaction);
+                if (modifiersText != null)
+                    letterText += modifiersText;
+            }
+
             WorldComponent_LeaderTracker.Instance.lastPlayerRaidTick = Find.TickManager.TicksGame;
             if (mapParent is Settlement attackedSettlement && attackedSettlement.Faction != null)
             {
@@ -46,6 +55,20 @@ namespace SimpleLeadership
 
             if (mapParent is not Settlement settlement || settlement.HasMap is false)
                 return;
+
+            if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements) && settlement.Faction != null && settlement.Faction.HostileTo(Faction.OfPlayer))
+            {
+                var reinforceComp = settlement.Map.GetComponent<MapComponent_DelayedRaid>();
+                if (reinforceComp.HasScheduledTag(ReinforceRaidTag) is false)
+                {
+                    var reinforceParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, settlement.Map);
+                    reinforceParms.faction = settlement.Faction;
+                    reinforceParms.points = StorytellerUtility.DefaultThreatPointsNow(settlement.Map) * 0.75f;
+                    reinforceParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
+                    reinforceComp.Schedule(reinforceParms, ReinforceRaidDelayTicks, ReinforceRaidTag);
+                    Find.LetterStack.ReceiveLetter("SL_ReinforcementsCalledLabel".Translate(), "SL_ReinforcementsCalledBody".Translate(settlement.Label, ReinforceRaidDelayTicks.ToStringTicksToPeriod()), LetterDefOf.ThreatBig, settlement);
+                }
+            }
 
             if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Support) is false || settlement.Faction.HostileTo(Faction.OfPlayer) is false)
                 return;

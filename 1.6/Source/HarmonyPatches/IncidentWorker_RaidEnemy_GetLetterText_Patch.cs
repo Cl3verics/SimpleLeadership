@@ -17,12 +17,9 @@ namespace SimpleLeadership
                 __result += "\n\n" + "SL_RaidOriginInfo".Translate(coloredBaseName).Resolve();
             }
 
-            var doctrines = parms.faction.GetDoctrines().Where(d => d.def.affectsRaidBehavior).ToList();
-            if (doctrines.Count > 0)
-            {
-                var formatted = string.Join(", ", doctrines.Select(d => d.def.ShortLabel.CapitalizeFirst().Colorize(d.def.categoryColor)));
-                __result += "\n\n" + "SL_ActiveModifiers".Translate(formatted).Resolve();
-            }
+            var modifiersText = Utils.GetActiveModifiersText(parms.faction);
+            if (modifiersText != null)
+                __result += modifiersText;
 
             if (RaidContext.CurrentOrigin != null)
             {

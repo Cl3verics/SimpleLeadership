@@ -73,6 +73,16 @@ namespace SimpleLeadership
 
         public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
 
+        public static string GetActiveModifiersText(Faction faction)
+        {
+            var doctrines = faction?.GetDoctrines().Where(d => d.def.affectsRaidBehavior).ToList();
+            if (doctrines == null || doctrines.Count == 0)
+                return null;
+
+            var formatted = string.Join(", ", doctrines.Select(d => d.def.ShortLabel.CapitalizeFirst().Colorize(d.def.categoryColor)));
+            return "\n\n" + "SL_ActiveModifiers".Translate(formatted).Resolve();
+        }
+
         public static bool IsValidLeaderCandidate(this Pawn pawn)
         {
             if (pawn == null || pawn.Dead || pawn.IsPrisonerOfColony || pawn.MapHeld != null && pawn.MapHeld.IsPlayerHome)
@@ -185,7 +195,7 @@ namespace SimpleLeadership
             raidParms.forced = true;
             raidParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
             var comp = map.GetComponent<MapComponent_DelayedRaid>();
-            comp.Schedule(raidParms, Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour));
+            comp.Schedule(raidParms, Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour), "Intervention", visitingFaction);
             Find.LetterStack.ReceiveLetter("SL_InterventionRaidLetterLabel".Translate(), "SL_InterventionRaidLetterBody".Translate(hostileInterventionist.NameColored, visitingFaction.NameColored), LetterDefOf.ThreatBig);
         }
 

@@ -12,7 +12,6 @@ namespace SimpleLeadership
     [HarmonyPatch(typeof(Lord), nameof(Lord.GotoToil))]
     public static class Lord_GotoToil_Patch
     {
-        private const string ReinforceRaidTag = "Reinforce";
         private const float ScorchedEarthFireSizeMin = 1.5f;
         private const float ScorchedEarthFireSizeMax = 3f;
         private const float ScorchedEarthMinFlammability = 0.5f;
@@ -22,23 +21,7 @@ namespace SimpleLeadership
             if (__instance.LordJob is LordJob_DefendBase && newLordToil is LordToil_AssaultColony or LordToil_PanicFlee && __instance.faction.HasDoctrine(PowerEventDefOf.SL_ScorchedEarth))
                 TryTriggerScorchedEarth(__instance);
 
-            if (__instance.LordJob is LordJob_DefendBase && newLordToil is LordToil_AssaultColony && __instance.Map.Parent is Settlement reinforceSettlement && reinforceSettlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements))
-            {
-                var reinforceComp = __instance.Map.GetComponent<MapComponent_DelayedRaid>();
-                if (reinforceComp.HasScheduledTag(ReinforceRaidTag) is false)
-                {
-                    var reinforceParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, __instance.Map);
-                    reinforceParms.faction = reinforceSettlement.Faction;
-                    reinforceParms.points = StorytellerUtility.DefaultThreatPointsNow(__instance.Map) * 0.75f;
-                    reinforceParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
-
-                    reinforceComp.Schedule(reinforceParms, 5000, ReinforceRaidTag);
-
-                    Find.LetterStack.ReceiveLetter("SL_ReinforcementsCalledLabel".Translate(), "SL_ReinforcementsCalledBody".Translate(reinforceSettlement.Label, 5000.ToStringTicksToPeriod()), LetterDefOf.ThreatBig, reinforceSettlement);
-                }
-            }
-
-            if (__instance.faction.HasDoctrine(PowerEventDefOf.SL_FinalPrice) && (newLordToil is LordToil_PanicFlee && __instance.LordJob is LordJob_AssaultColony or LordJob_DefendBase || newLordToil is LordToil_ExitMap && __instance.LordJob is LordJob_AssaultColony && __instance.ownedPawns.Any(p => p.carryTracker.CarriedThing is Pawn carried && carried.Faction == Faction.OfPlayer) is false))
+            if (__instance.faction.HasDoctrine(PowerEventDefOf.SL_FinalPrice) && (newLordToil is LordToil_PanicFlee && __instance.LordJob is LordJob_AssaultColony or LordJob_DefendBase or LordJob_Siege || newLordToil is LordToil_ExitMap && (__instance.LordJob is LordJob_AssaultColony or LordJob_Siege) && __instance.ownedPawns.Any(p => p.carryTracker.CarriedThing is Pawn carried && carried.Faction == Faction.OfPlayer) is false))
                 return false;
 
             return true;

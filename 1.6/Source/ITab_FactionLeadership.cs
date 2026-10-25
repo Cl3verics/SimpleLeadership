@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -38,6 +39,8 @@ namespace SimpleLeadership
         private Vector2 basesScroll;
 
         public override bool IsVisible => SelObject is Settlement settlement && settlement.Faction != Faction.OfPlayer;
+
+        private static string DoctrineTitleCase(string label) => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(label.ToLower(CultureInfo.InvariantCulture));
 
         public WITab_FactionLeadership()
         {
@@ -212,7 +215,7 @@ namespace SimpleLeadership
             var curY = rect.y;
 
             Text.Font = GameFont.Medium;
-            var titleText = doc.def.label.CapitalizeFirst();
+            var titleText = DoctrineTitleCase(doc.def.label);
             var titleHeight = Text.CalcHeight(titleText, rect.width);
             GUI.color = doc.def.categoryColor;
             Widgets.Label(new Rect(rect.x, curY, rect.width, titleHeight), titleText);
@@ -409,7 +412,7 @@ namespace SimpleLeadership
 
                 GUI.color = PowerEventTitleColor;
                 Text.Font = GameFont.Medium;
-                Widgets.Label(new Rect(r.x, curY, r.width, 30f), doc.def.LabelCap);
+                Widgets.Label(new Rect(r.x, curY, r.width, 30f), DoctrineTitleCase(doc.def.label));
                 curY += 35;
                 GUI.color = Color.white;
 

@@ -1,3 +1,4 @@
+using RimWorld;
 using RimWorld.Planet;
 
 namespace SimpleLeadership
@@ -5,5 +6,6 @@ namespace SimpleLeadership
     public static class RaidContext
     {
         public static Settlement CurrentOrigin;
+        public static Faction InterventionTargetFaction;
     }
 }
