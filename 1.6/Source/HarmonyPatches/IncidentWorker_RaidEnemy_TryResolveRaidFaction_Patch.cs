@@ -7,7 +7,7 @@ using Verse;
 
 namespace SimpleLeadership
 {
-    [HarmonyPatch(typeof(IncidentWorker_RaidEnemy), "TryResolveRaidFaction")]
+    [HarmonyPatch(typeof(IncidentWorker_RaidEnemy), nameof(IncidentWorker_RaidEnemy.TryResolveRaidFaction))]
     public static class IncidentWorker_RaidEnemy_TryResolveRaidFaction_Patch
     {
         public static PlanetTile RaidContextTargetTile;
@@ -26,7 +26,7 @@ namespace SimpleLeadership
             if (Rand.Value >= SimpleLeadershipMod.Settings.distanceWeight)
                 return;
             ChosenOriginSettlement = Find.WorldObjects.Settlements
-                .Where(s => s.Faction != null && !s.Faction.IsPlayer && s.Spawned && s.Tile.Valid)
+                .Where(s => s.Faction != null && s.Faction.IsPlayer is false && s.Spawned && s.Tile.Valid)
                 .MinBy(s => Utils.SafeApproxDistanceInTiles(s.Tile, targetTile));
         }
 
@@ -65,7 +65,7 @@ namespace SimpleLeadership
             if (faction == null)
                 return null;
 
-            List<Settlement> factionSettlements = Find.WorldObjects.Settlements
+            var factionSettlements = Find.WorldObjects.Settlements
                 .Where(s => s.Faction == faction && s.Spawned)
                 .ToList();
 

@@ -1,14 +1,14 @@
-using HarmonyLib;
-using RimWorld;
-using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
+using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace SimpleLeadership
 {
-    [HarmonyPatch(typeof(MapGenerator), "GenerateMap")]
+    [HarmonyPatch(typeof(MapGenerator), nameof(MapGenerator.GenerateMap))]
     public static class MapGenerator_GenerateMap_Patch
     {
         public static void Postfix(Map __result)
@@ -27,7 +27,7 @@ namespace SimpleLeadership
             }
 
             var tracker = WorldComponent_LeaderTracker.Instance;
-            if (tracker.kidnappedPrisoners.TryGetValue(settlement, out var prisonerList) && prisonerList.prisoners.Any())
+            if (tracker.kidnappedPrisoners.TryGetValue(settlement, out var prisonerList) && prisonerList.prisoners.Count > 0)
             {
                 SpawnKidnappedPrisoners(__result, prisonerList.prisoners.ToList());
                 tracker.kidnappedPrisoners.Remove(settlement);
@@ -46,25 +46,27 @@ namespace SimpleLeadership
             }
         }
 
+        private const string SupportRaidTag = "Support";
+
         public static void DoSupportArriving(Map map, Settlement settlement)
         {
             var comp = map.GetComponent<MapComponent_DelayedRaid>();
-            if (comp.IsScheduled) return;
+            if (comp.HasScheduledTag(SupportRaidTag)) return;
 
-            float totalCombatPower = 0f;
+            var totalCombatPower = 0f;
             foreach (var pawn in map.mapPawns.AllPawnsSpawned)
             {
                 if (pawn.HostileTo(Faction.OfPlayer))
                     totalCombatPower += pawn.kindDef.combatPower;
             }
 
-            IncidentParms parms = new IncidentParms();
+            var parms = new IncidentParms();
             parms.target = map;
             parms.faction = settlement.Faction;
             parms.points = totalCombatPower * 0.5f;
             parms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
 
-            comp.Schedule(parms, 200);
+            comp.Schedule(parms, 200, SupportRaidTag);
 
             Messages.Message("SL_SupportArriving".Translate(settlement.Label), MessageTypeDefOf.ThreatBig);
         }
@@ -76,7 +78,7 @@ namespace SimpleLeadership
                 .Where(b => b.Faction == faction)
                 .ToList();
 
-            if (!factionBeds.Any())
+            if (factionBeds.Count == 0)
                 return new List<Building_Bed>();
 
             var bedsByRoom = factionBeds
@@ -88,7 +90,7 @@ namespace SimpleLeadership
             List<Building_Bed> selectedBeds = null;
             foreach (var roomGroup in bedsByRoom)
             {
-                int bedCount = roomGroup.Count();
+                var bedCount = roomGroup.Count();
                 if (bedCount >= 3 && bedCount <= 5)
                 {
                     selectedBeds = roomGroup.ToList();
@@ -99,7 +101,7 @@ namespace SimpleLeadership
             if (selectedBeds == null)
             {
                 var allBeds = factionBeds.ToList();
-                int takeCount = Math.Min(allBeds.Count, Rand.RangeInclusive(3, 5));
+                var takeCount = Math.Min(allBeds.Count, Rand.RangeInclusive(3, 5));
                 selectedBeds = allBeds.Take(takeCount).ToList();
             }
 
@@ -125,7 +127,7 @@ namespace SimpleLeadership
                 {
                     spawnPos = selectedBeds[0].Position;
                 }
-                if (!prisoner.Spawned)
+                if (prisoner.Spawned is false)
                     GenSpawn.Spawn(prisoner, spawnPos, map);
                 if (prisoner.guest != null)
                     prisoner.guest.SetGuestStatus(faction, GuestStatus.Slave);
@@ -137,13 +139,11 @@ namespace SimpleLeadership
 
         private static void SpawnPrisoners(Map map, Faction faction)
         {
-            var selectedBeds = FindPrisonerBeds(map, faction);
-
-            foreach (var bed in selectedBeds)
+            foreach (var bed in FindPrisonerBeds(map, faction))
             {
                 bed.ForPrisoners = true;
-                PawnGenerationRequest request = new PawnGenerationRequest(PawnKindDefOf.Slave, faction, PawnGenerationContext.NonPlayer, -1, true);
-                Pawn prisoner = PawnGenerator.GeneratePawn(request);
+                var request = new PawnGenerationRequest(PawnKindDefOf.Slave, faction, PawnGenerationContext.NonPlayer, -1, true);
+                var prisoner = PawnGenerator.GeneratePawn(request);
                 prisoner.SetFaction(Faction.OfAncients);
                 GenSpawn.Spawn(prisoner, bed.Position, map);
                 if (prisoner.guest != null)

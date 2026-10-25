@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Verse;
+using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using System.Linq;
 using UnityEngine;
+using Verse;
 
 namespace SimpleLeadership
 {
@@ -17,17 +17,15 @@ namespace SimpleLeadership
             {
                 if (typeof(Site).IsAssignableFrom(def.worldObjectClass))
                 {
-                    def.comps ??= new List<WorldObjectCompProperties>();
+                    def.comps ??= new();
                     def.comps.Add(new WorldObjectCompProperties_SiteOwnership());
                 }
                 else if (typeof(Settlement).IsAssignableFrom(def.worldObjectClass))
                 {
-                    if (def.inspectorTabs == null)
-                        def.inspectorTabs = new List<Type>();
+                    def.inspectorTabs ??= new();
                     def.inspectorTabs.Add(typeof(WITab_FactionLeadership));
 
-                    if (def.inspectorTabsResolved == null)
-                        def.inspectorTabsResolved = new List<InspectTabBase>();
+                    def.inspectorTabsResolved ??= new();
                     def.inspectorTabsResolved.Add(InspectTabManager.GetSharedInstance(typeof(WITab_FactionLeadership)));
                 }
             }
@@ -40,10 +38,31 @@ namespace SimpleLeadership
             return int.MaxValue;
         }
 
-        public static bool IsInPowerEvent<T>(this object obj) where T : PowerEventBase
+        public static bool HasDoctrine(this Faction faction, DoctrineDef def)
         {
-            return WorldComponent_LeaderTracker.Instance.IsInPowerEvent<T>(obj);
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false || faction == null)
+                return false;
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            var data = tracker.GetLeadershipDataFor(faction);
+            if (data == null)
+                return false;
+            if (data.doctrinesGenerated is false)
+                tracker.GenerateDoctrinesFor(faction, data);
+            return data.doctrines.Any(d => d.def == def);
         }
+
+        public static List<FactionDoctrine> GetDoctrines(this Faction faction)
+        {
+            if (SimpleLeadershipMod.Settings.enableDoctrines is false || faction == null)
+                return [];
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            var data = tracker.GetLeadershipDataFor(faction);
+            if (data != null && data.doctrinesGenerated is false)
+                tracker.GenerateDoctrinesFor(faction, data);
+            return data?.doctrines ?? [];
+        }
+
+        public static bool IsInPowerEvent<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.IsInPowerEvent<T>(obj);
 
         public static bool IsInPowerEvent(this object obj, PowerEventDef def)
         {
@@ -52,18 +71,11 @@ namespace SimpleLeadership
             return WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).Any(ev => ev.def == def);
         }
 
-        public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase
-        {
-            return WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
-        }
+        public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
 
         public static bool IsValidLeaderCandidate(this Pawn pawn)
         {
-            if (pawn == null || pawn.Dead)
-                return false;
-            if (pawn.IsPrisonerOfColony)
-                return false;
-            if (pawn.MapHeld != null && pawn.MapHeld.IsPlayerHome)
+            if (pawn == null || pawn.Dead || pawn.IsPrisonerOfColony || pawn.MapHeld != null && pawn.MapHeld.IsPlayerHome)
                 return false;
             return true;
         }
@@ -76,7 +88,7 @@ namespace SimpleLeadership
             float spawnChance;
             if (isRaidingPlayer)
             {
-                float baseChance = SimpleLeadershipMod.Settings.leaderSpawnChance;
+                var baseChance = SimpleLeadershipMod.Settings.leaderSpawnChance;
                 spawnChance = leader == faction.leader ? baseChance * 0.2f : baseChance;
             }
             else
@@ -84,17 +96,17 @@ namespace SimpleLeadership
                 var leaderTracker = WorldComponent_LeaderTracker.Instance;
                 if (leader == faction.leader)
                 {
-                    int settlementCount = Find.WorldObjects.Settlements.Count(s => s.Faction == faction);
+                    var settlementCount = Find.WorldObjects.Settlements.Count(s => s.Faction == faction);
                     spawnChance = settlementCount > 0 ? 1f / settlementCount : 0f;
                 }
                 else
                 {
-                    int controlledBases = Find.WorldObjects.Settlements.Count(s => s.Faction == faction && leaderTracker.GetBaseLeader(s) == leader);
+                    var controlledBases = Find.WorldObjects.Settlements.Count(s => s.Faction == faction && leaderTracker.GetBaseLeader(s) == leader);
                     spawnChance = controlledBases > 0 ? 1f / controlledBases : 0f;
                 }
             }
 
-            if (settlement != null && settlement.IsInPowerEvent(PowerEventDefOf.SL_Inspection))
+            if (settlement?.IsInPowerEvent(PowerEventDefOf.SL_Inspection) is true)
             {
                 spawnChance += 0.3f;
             }
@@ -107,31 +119,32 @@ namespace SimpleLeadership
             if (pawn.Faction == null)
                 return;
 
-            WorldComponent_LeaderTracker leaderTracker = WorldComponent_LeaderTracker.Instance;
+            var leaderTracker = WorldComponent_LeaderTracker.Instance;
             var leaderSettlements = leaderTracker.GetSettlementsOfBaseLeader(pawn).ToList();
 
-            if (leaderSettlements.Any())
+            if (leaderSettlements.Count > 0 && pawn != pawn.Faction.leader)
             {
-                if (pawn != pawn.Faction.leader)
+                var data = leaderTracker.GetLeadershipDataFor(pawn.Faction);
+                if (data != null && data.exBaseLeaders.Contains(pawn) is false)
+                    data.exBaseLeaders.Add(pawn);
+                foreach (var settlement in leaderSettlements)
                 {
-                    foreach (var settlement in leaderSettlements)
-                    {
-                        if (SimpleLeadershipMod.Settings.enableEvents)
-                            leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, settlement);
-                    }
+                    if (SimpleLeadershipMod.Settings.enableEvents)
+                        leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerStruggle, settlement);
                 }
+                leaderTracker.Notify_LeaderLost(pawn.Faction, pawn);
             }
         }
 
         public static void HandleLeaderLost(Faction faction, Pawn oldLeader, string labelKey, string bodyKey, string leaderNamedKey)
         {
-            string label = labelKey.Translate(faction.Name, faction.LeaderTitle).Resolve().CapitalizeFirst();
-            string body = bodyKey.Translate(faction.NameColored, faction.LeaderTitle, oldLeader.Named(leaderNamedKey)).Resolve().CapitalizeFirst();
+            var label = labelKey.Translate(faction.Name, faction.LeaderTitle).Resolve().CapitalizeFirst();
+            var body = bodyKey.Translate(faction.NameColored, faction.LeaderTitle, oldLeader.Named(leaderNamedKey)).Resolve().CapitalizeFirst();
 
             var leaderTracker = WorldComponent_LeaderTracker.Instance;
             var candidates = leaderTracker.GetBaseLeadersFor(faction).Where(p => p.IsValidLeaderCandidate() && p != oldLeader).ToList();
-            
-            if (candidates.Any())
+
+            if (candidates.Count > 0)
             {
                 var actingLeader = candidates.RandomElement();
                 var data = leaderTracker.GetLeadershipDataFor(faction);
@@ -140,21 +153,87 @@ namespace SimpleLeadership
                     data.exLeader = oldLeader;
                     data.actingLeader = actingLeader;
                 }
-                
-                string actingLeaderText = "SL_ActingLeaderChosen".Translate(faction.LeaderTitle.Named("LEADERTITLE"), actingLeader.Named("PAWN")).Resolve();
+
+                var actingLeaderText = "SL_ActingLeaderChosen".Translate(faction.LeaderTitle.Named("LEADERTITLE"), actingLeader.Named("PAWN")).Resolve();
                 body += "\n\n" + actingLeaderText;
             }
 
-            if (!faction.temporary)
+            if (faction.temporary is false)
             {
                 Find.LetterStack.ReceiveLetter(label, body, LetterDefOf.NeutralEvent, oldLeader, faction);
             }
-            
+
             if (SimpleLeadershipMod.Settings.enableEvents)
                 leaderTracker.StartPowerEvent(PowerEventDefOf.SL_PowerVoid, faction);
-            
+
+            leaderTracker.Notify_LeaderLost(faction, oldLeader);
             faction.leader = null;
         }
 
+        public static void TryTriggerInterventionRaid(Map map, Faction visitingFaction)
+        {
+            var tracker = WorldComponent_LeaderTracker.Instance;
+            if (tracker.lastInterventionRaidTick > 0 && Find.TickManager.TicksGame - tracker.lastInterventionRaidTick < Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidCooldownDays * GenDate.TicksPerDay))
+                return;
+            var hostileInterventionist = Find.FactionManager.AllFactionsVisible
+                .FirstOrDefault(f => f.HasDoctrine(PowerEventDefOf.SL_Intervention) && f.HostileTo(visitingFaction) && f.HostileTo(Faction.OfPlayer));
+            if (hostileInterventionist == null || Rand.Chance(SimpleLeadershipMod.Settings.interventionRaidChance) is false)
+                return;
+            tracker.lastInterventionRaidTick = Find.TickManager.TicksGame;
+            var raidParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, map);
+            raidParms.faction = hostileInterventionist;
+            raidParms.forced = true;
+            raidParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
+            var comp = map.GetComponent<MapComponent_DelayedRaid>();
+            comp.Schedule(raidParms, Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidDelayHours * GenDate.TicksPerHour));
+            Find.LetterStack.ReceiveLetter("SL_InterventionRaidLetterLabel".Translate(), "SL_InterventionRaidLetterBody".Translate(hostileInterventionist.NameColored, visitingFaction.NameColored), LetterDefOf.ThreatBig);
+        }
+
+        public static void EnsureRoyalLeaderStatus(Faction faction, Pawn pawn)
+        {
+            if (ModLister.RoyaltyInstalled is false || faction == null || pawn == null || pawn.royalty == null
+                || pawn.royalty.AllTitlesForReading.Count > 0 || faction.def.HasRoyalTitles is false)
+                return;
+
+            var leaderKinds = LeaderKindsFor(faction);
+            if (leaderKinds.Count == 0)
+                return;
+
+            var title = leaderKinds.FirstOrDefault(k => k.titleRequired != null)?.titleRequired
+                ?? faction.def.RoyalTitlesAwardableInSeniorityOrderForReading.LastOrDefault();
+            if (title == null)
+                return;
+
+            pawn.royalty.SetTitle(faction, title, grantRewards: false);
+            PawnGenerator.PurchasePermits(pawn, faction);
+            var nextTitle = title.GetNextTitle(faction);
+            pawn.royalty.SetFavor(faction, nextTitle != null ? Rand.Range(0, nextTitle.favorCost - 1) : 0);
+
+            if (title.maxPsylinkLevel > 0)
+            {
+                var amplifier = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.PsychicAmplifier) as Hediff_Level;
+                if (amplifier == null)
+                {
+                    amplifier = HediffMaker.MakeHediff(HediffDefOf.PsychicAmplifier, pawn, pawn.health.hediffSet.GetBrain()) as Hediff_Level;
+                    pawn.health.AddHediff(amplifier);
+                }
+                if (amplifier.level < title.maxPsylinkLevel)
+                    amplifier.SetLevelTo(title.maxPsylinkLevel);
+            }
+
+            var leaderKind = leaderKinds.FirstOrDefault(k => k.titleRequired == title) ?? leaderKinds.RandomElement();
+            pawn.apparel.DestroyAll();
+            PawnApparelGenerator.GenerateStartingApparelFor(pawn, new PawnGenerationRequest(leaderKind, faction, PawnGenerationContext.NonPlayer, forceGenerateNewPawn: true));
+        }
+
+        public static List<PawnKindDef> LeaderKindsFor(Faction faction)
+        {
+            var kinds = new List<PawnKindDef>();
+            foreach (var groupMaker in faction.def.pawnGroupMakers.Where(g => g.kindDef == PawnGroupKindDefOf.Combat))
+                kinds.AddRange(groupMaker.options.Where(o => o.kind.factionLeader).Select(o => o.kind));
+            if (faction.def.fixedLeaderKinds != null)
+                kinds.AddRange(faction.def.fixedLeaderKinds);
+            return kinds;
+        }
     }
 }

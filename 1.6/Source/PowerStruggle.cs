@@ -7,15 +7,16 @@ namespace SimpleLeadership
     {
         public override void OnResolve()
         {
-            if (settlement == null || settlement.Faction == null) { base.OnResolve(); return; }
-            Faction faction = settlement.Faction;
-            var leaderTracker = WorldComponent_LeaderTracker.Instance;
-            var data = leaderTracker.GetLeadershipDataFor(faction);
-
-            if (data != null)
+            if (settlement?.Faction != null)
             {
-                Pawn newLeader = leaderTracker.GenerateBaseLeader(faction);
-                data.settlementLeaders[settlement] = newLeader;
+                var faction = settlement.Faction;
+                var leaderTracker = WorldComponent_LeaderTracker.Instance;
+                var data = leaderTracker.GetLeadershipDataFor(faction);
+                if (data != null)
+                {
+                    var newLeader = leaderTracker.GenerateBaseLeader(faction);
+                    leaderTracker.ReplaceBaseLeader(settlement, newLeader);
+                }
             }
             base.OnResolve();
         }
