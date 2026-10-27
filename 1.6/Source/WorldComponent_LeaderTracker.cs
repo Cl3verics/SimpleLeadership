@@ -29,6 +29,7 @@ namespace SimpleLeadership
         public Dictionary<Faction, int> lastLeaderRaidTick = new();
         public Dictionary<Faction, Settlement> lastRaidOrigin = [];
         public Dictionary<Settlement, KidnappedPrisonersList> kidnappedPrisoners = [];
+        private HashSet<Pawn> pinnedPawns = [];
         private float MaxLeaderDistance => 60f * Mathf.Sqrt(Find.WorldGrid.TilesCount / 30000f);
         private const int MinParentAgeGapYears = 14;
 
@@ -177,6 +178,7 @@ namespace SimpleLeadership
             Scribe_References.Look(ref lastPlayerRaidVictim, "lastPlayerRaidVictim");
             Scribe_Collections.Look(ref lastMutualDefenseRaidTick, "lastMutualDefenseRaidTick", LookMode.Reference, LookMode.Value, ref mutualDefenseKeys, ref mutualDefenseValues);
             Scribe_Values.Look(ref lastInterventionRaidTick, "lastInterventionRaidTick", -1);
+            Scribe_Collections.Look(ref pinnedPawns, "pinnedPawns", LookMode.Reference);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -186,6 +188,7 @@ namespace SimpleLeadership
                 kidnappedPrisoners ??= new();
                 activeEvents ??= [];
                 lastMutualDefenseRaidTick ??= new();
+                pinnedPawns ??= [];
                 activeEvents.RemoveAll(ev => ev.GetTarget() == null);
                 eventsByTarget = new Dictionary<object, List<PowerEventBase>>();
                 foreach (var ev in activeEvents)
@@ -263,6 +266,7 @@ namespace SimpleLeadership
                 if (newLeader != null && Find.WorldPawns.Contains(newLeader) is false)
                 {
                     Find.WorldPawns.PassToWorld(newLeader, PawnDiscardDecideMode.KeepForever);
+                    pinnedPawns.Add(newLeader);
                     newLeader.guest.Recruitable = false;
                     if (faction.HasDoctrine(PowerEventDefOf.SL_FamilialSuccession))
                     {
@@ -297,7 +301,12 @@ namespace SimpleLeadership
                 {
                     var request = new PawnGenerationRequest(factionLeader.kindDef, factionLeader.Faction, PawnGenerationContext.NonPlayer, forceGenerateNewPawn: true, forceDead: true, canGeneratePawnRelations: false, fixedBiologicalAge: Mathf.Max(factionLeader.ageTracker.AgeBiologicalYears, baseLeader.ageTracker.AgeBiologicalYears) + 25f);
                     sharedParent = PawnGenerator.GeneratePawn(request);
+                    if (Find.WorldPawns.Contains(sharedParent))
+                    {
+                        Find.WorldPawns.RemovePawn(sharedParent);
+                    }
                     Find.WorldPawns.PassToWorld(sharedParent, PawnDiscardDecideMode.KeepForever);
+                    pinnedPawns.Add(sharedParent);
                     factionLeader.relations.AddDirectRelation(PawnRelationDefOf.Parent, sharedParent);
                 }
 
@@ -650,9 +659,9 @@ namespace SimpleLeadership
         private void UnpinUnreferencedLeaders()
         {
             List<Pawn> unpinned = null;
-            foreach (var pawn in Find.WorldPawns.ForcefullyKeptPawns)
+            foreach (var pawn in pinnedPawns)
             {
-                if (GetSettlementsOfBaseLeader(pawn).Any() is false && PawnUtility.IsFactionLeader(pawn) is false && IsTrackedLeaderOrRelative(pawn) is false)
+                if (pawn == null || GetSettlementsOfBaseLeader(pawn).Any() is false && PawnUtility.IsFactionLeader(pawn) is false && IsTrackedLeaderOrRelative(pawn) is false)
                 {
                     unpinned ??= [];
                     unpinned.Add(pawn);
@@ -663,6 +672,7 @@ namespace SimpleLeadership
             foreach (var pawn in unpinned)
             {
                 Find.WorldPawns.ForcefullyKeptPawns.Remove(pawn);
+                pinnedPawns.Remove(pawn);
             }
         }
     }
