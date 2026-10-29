@@ -58,13 +58,13 @@ namespace SimpleLeadership
         [Label("SL_InterventionRaidChance")]
         [DrawIf("enableDoctrines")]
         [Percentage]
-        public float interventionRaidChance = 0.35f;
+        public float interventionRaidChance = 0.15f;
 
         [Label("SL_InterventionRaidDelayHours")]
         [DrawIf("enableDoctrines")]
         [Range(0.1f, 12f)]
         [Step(0.1f)]
-        public float interventionRaidDelayHours = 0.8f;
+        public float interventionRaidDelayHours = 0.5f;
 
         [Label("SL_InterventionRaidCooldownDays")]
         [DrawIf("enableDoctrines")]
