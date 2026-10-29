@@ -189,6 +189,8 @@ namespace SimpleLeadership
                 .FirstOrDefault(f => f.HasDoctrine(PowerEventDefOf.SL_Intervention) && f.HostileTo(visitingFaction) && f.HostileTo(Faction.OfPlayer));
             if (hostileInterventionist == null || Rand.Chance(SimpleLeadershipMod.Settings.interventionRaidChance) is false)
                 return;
+            if (IgnoranceIsBlissCompat.FactionInEligibleTechRange(hostileInterventionist) is false)
+                return;
             tracker.lastInterventionRaidTick = Find.TickManager.TicksGame;
             var raidParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, map);
             raidParms.faction = hostileInterventionist;

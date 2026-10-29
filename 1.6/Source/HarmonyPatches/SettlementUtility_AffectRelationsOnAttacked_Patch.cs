@@ -36,6 +36,8 @@ namespace SimpleLeadership
                             continue;
                         if (tracker.lastMutualDefenseRaidTick.TryGetValue(faction, out var lastTick) && Find.TickManager.TicksGame - lastTick < cooldownTicks)
                             continue;
+                        if (IgnoranceIsBlissCompat.FactionInEligibleTechRange(faction) is false)
+                            continue;
                         if (faction.HostileTo(Faction.OfPlayer) is false)
                         {
                             faction.TryAffectGoodwillWith(Faction.OfPlayer, MutualDefenseHostilityDrop, canSendMessage: true, canSendHostilityLetter: true, reason: HistoryEventDefOf.AttackedSettlement);
@@ -56,7 +58,7 @@ namespace SimpleLeadership
             if (mapParent is not Settlement settlement || settlement.HasMap is false)
                 return;
 
-            if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements) && settlement.Faction != null && settlement.Faction.HostileTo(Faction.OfPlayer))
+            if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements) && settlement.Faction != null && settlement.Faction.HostileTo(Faction.OfPlayer) && IgnoranceIsBlissCompat.FactionInEligibleTechRange(settlement.Faction))
             {
                 var reinforceComp = settlement.Map.GetComponent<MapComponent_DelayedRaid>();
                 if (reinforceComp.HasScheduledTag(ReinforceRaidTag) is false)

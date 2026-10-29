@@ -50,6 +50,7 @@ namespace SimpleLeadership
 
         public static void DoSupportArriving(Map map, Settlement settlement)
         {
+            if (IgnoranceIsBlissCompat.FactionInEligibleTechRange(settlement.Faction) is false) return;
             var comp = map.GetComponent<MapComponent_DelayedRaid>();
             if (comp.HasScheduledTag(SupportRaidTag)) return;
 
