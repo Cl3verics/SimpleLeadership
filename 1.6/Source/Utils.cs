@@ -73,14 +73,25 @@ namespace SimpleLeadership
 
         public static IEnumerable<T> GetActiveEvents<T>(this object obj) where T : PowerEventBase => WorldComponent_LeaderTracker.Instance.GetActiveEventsFor(obj).OfType<T>();
 
-        public static string GetActiveModifiersText(Faction faction)
+        public static string GetActiveModifiersHoverText(Faction faction)
         {
             var doctrines = faction?.GetDoctrines().Where(d => d.def.affectsRaidBehavior).ToList();
             if (doctrines == null || doctrines.Count == 0)
                 return null;
 
-            var formatted = string.Join(", ", doctrines.Select(d => d.def.ShortLabel.CapitalizeFirst().Colorize(d.def.categoryColor)));
-            return "\n\n" + "SL_ActiveModifiers".Translate(formatted).Resolve();
+            var lines = doctrines.Select(d =>
+            {
+                var label = d.def.ShortLabel.CapitalizeFirst().Colorize(d.def.categoryColor);
+                var effects = string.Join("; ", d.def.effects);
+                return "SL_ActiveModifierEntry".Translate(label, effects).Resolve();
+            });
+            return "SL_ActiveModifiers".Translate(string.Join("\n", lines)).Resolve();
+        }
+
+        public static string GetActiveModifiersText(Faction faction)
+        {
+            var hover = GetActiveModifiersHoverText(faction);
+            return hover is not null ? $"\n\n{hover}" : null;
         }
 
         public static bool IsValidLeaderCandidate(this Pawn pawn)
@@ -182,6 +193,10 @@ namespace SimpleLeadership
 
         public static void TryTriggerInterventionRaid(Map map, Faction visitingFaction)
         {
+            if (visitingFaction is null || visitingFaction == Faction.OfPlayer)
+            {
+                return;
+            }
             var tracker = WorldComponent_LeaderTracker.Instance;
             if (tracker.lastInterventionRaidTick > 0 && Find.TickManager.TicksGame - tracker.lastInterventionRaidTick < Mathf.RoundToInt(SimpleLeadershipMod.Settings.interventionRaidCooldownDays * GenDate.TicksPerDay))
                 return;
@@ -194,6 +209,7 @@ namespace SimpleLeadership
             tracker.lastInterventionRaidTick = Find.TickManager.TicksGame;
             var raidParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, map);
             raidParms.faction = hostileInterventionist;
+            raidParms.points = Mathf.Max(raidParms.points, hostileInterventionist.def.MinPointsToGeneratePawnGroup(PawnGroupKindDefOf.Combat));
             raidParms.forced = true;
             raidParms.raidArrivalMode = PawnsArrivalModeDefOf.EdgeWalkIn;
             var comp = map.GetComponent<MapComponent_DelayedRaid>();

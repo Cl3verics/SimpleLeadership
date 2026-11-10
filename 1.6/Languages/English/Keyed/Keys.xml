@@ -68,6 +68,7 @@
   <SL_JumpToBaseBtn>Jump to {0}</SL_JumpToBaseBtn>
   <SL_ActiveModifiers>Active Modifiers:
 {0}</SL_ActiveModifiers>
+  <SL_ActiveModifierEntry>• {0}: {1}</SL_ActiveModifierEntry>
   <SL_InvestigationCompletedLabel>Doctrine investigated</SL_InvestigationCompletedLabel>
   <SL_InvestigationCompletedDesc>Investigation concluded! {2} proposed the {0} for {1}.</SL_InvestigationCompletedDesc>
   <SL_LeaderDoctrinesLost>Leader {0} doctrines are no longer applying to {1}: {2}</SL_LeaderDoctrinesLost>
@@ -119,7 +120,7 @@
   <SL_HitAndRunRegroupDelayHours.Desc>How long the regrouped raid takes to return to the assault.</SL_HitAndRunRegroupDelayHours.Desc>
   <SL_HitAndRunLockoutDays.Desc>Minimum time between consecutive Hit and Run regroup raids.</SL_HitAndRunLockoutDays.Desc>
   <SL_AttritionSiegeChance.Desc>Chance that raids from factions with the Attrition Warfare doctrine arrive as sieges.</SL_AttritionSiegeChance.Desc>
-  <SL_NoMercyExecutionRange.Desc>Search radius in which raiders with the No Mercy doctrine hunt for downed colonists to execute.</SL_NoMercyExecutionRange.Desc>
+  <SL_NoMercyExecutionRange.Desc>Search radius in which raiders with the No Mercy doctrine hunt for downed enemies to execute.</SL_NoMercyExecutionRange.Desc>
   <SL_ScorchedEarthMaxFires.Desc>Maximum number of structures set alight when a base under the Scorched Earth doctrine is abandoned.</SL_ScorchedEarthMaxFires.Desc>
   <SL_GraciousRepatriationMultiplier.Desc>Bonus goodwill gained, as a fraction of the original gain, when returning healthy prisoners to a faction with the Gracious Reparations doctrine.</SL_GraciousRepatriationMultiplier.Desc>
   <SL_FallenVenerationCorpseGoodwill.Desc>Goodwill gained per corpse of a fallen faction member returned to a faction with the Fallen Veneration doctrine.</SL_FallenVenerationCorpseGoodwill.Desc>

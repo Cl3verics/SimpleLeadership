@@ -15,14 +15,6 @@ namespace SimpleLeadership
             {
                 var coloredBaseName = RaidContext.CurrentOrigin.Label.Colorize(ColorLibrary.RedReadable);
                 __result += "\n\n" + "SL_RaidOriginInfo".Translate(coloredBaseName).Resolve();
-            }
-
-            var modifiersText = Utils.GetActiveModifiersText(parms.faction);
-            if (modifiersText != null)
-                __result += modifiersText;
-
-            if (RaidContext.CurrentOrigin != null)
-            {
                 var baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(RaidContext.CurrentOrigin);
                 if (baseLeader != null && pawns.Contains(baseLeader))
                 {

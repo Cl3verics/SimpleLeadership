@@ -22,7 +22,7 @@ namespace SimpleLeadership
                 PathEndMode.Touch,
                 TraverseParms.For(pawn),
                 SimpleLeadershipMod.Settings.noMercyExecutionRange,
-                t => t is Pawn p && p.Faction == Faction.OfPlayer && p.RaceProps.Humanlike && p.Downed && pawn.CanReserveAndReach(p, PathEndMode.Touch, Danger.Deadly));
+                t => t is Pawn p && p.HostileTo(pawn) && p.RaceProps.Humanlike && p.Downed && pawn.CanReserveAndReach(p, PathEndMode.Touch, Danger.Deadly));
 
             if (target is Pawn downedPawn && (__result == null || pawn.Position.DistanceTo(downedPawn.Position) <= ExecuteAdjacencyRadius))
             {

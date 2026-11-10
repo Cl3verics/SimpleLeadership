@@ -13,7 +13,8 @@ namespace SimpleLeadership
     {
         public static void Prefix(PawnGroupMakerParms parms, ref List<Pawn> __state)
         {
-            if (parms == null || parms.faction == null || parms.faction.def.humanlikeFaction is false)
+            if (parms?.faction is null || parms.faction.def.humanlikeFaction is false
+                || parms.groupKind != PawnGroupKindDefOf.Combat && parms.groupKind != PawnGroupKindDefOf.Settlement)
                 return;
             try
             {
@@ -46,25 +47,32 @@ namespace SimpleLeadership
                 }
 
                 __state = new List<Pawn>();
+                var budget = parms.points;
+                var minGroupPoints = parms.faction.def.MinPointsToGeneratePawnGroup(parms.groupKind);
 
                 Pawn factionLeader = parms.faction.leader;
-                if (factionLeader != null && !factionLeader.Dead && !factionLeader.Spawned)
+                if (factionLeader?.Dead is false && factionLeader.Spawned is false && budget - factionLeader.kindDef.combatPower >= minGroupPoints)
                 {
                     float spawnChance = Utils.CalculateSpawnChance(factionLeader, parms.faction, settlement, isRaidingPlayer);
                     if (Rand.Chance(spawnChance))
+                    {
                         __state.Add(factionLeader);
+                        budget -= factionLeader.kindDef.combatPower;
+                    }
                 }
 
                 Pawn baseLeader = WorldComponent_LeaderTracker.Instance.GetBaseLeader(settlement);
-                if (baseLeader != null && !baseLeader.Dead && !baseLeader.Spawned && !__state.Contains(baseLeader))
+                if (baseLeader?.Dead is false && baseLeader.Spawned is false && !__state.Contains(baseLeader) && budget - baseLeader.kindDef.combatPower >= minGroupPoints)
                 {
                     float spawnChance = Utils.CalculateSpawnChance(baseLeader, parms.faction, settlement, isRaidingPlayer);
                     if (Rand.Chance(spawnChance))
+                    {
                         __state.Add(baseLeader);
+                        budget -= baseLeader.kindDef.combatPower;
+                    }
                 }
 
-                foreach (var leader in __state)
-                    parms.points -= leader.kindDef.combatPower;
+                parms.points = budget;
             }
             catch (Exception ex)
             {

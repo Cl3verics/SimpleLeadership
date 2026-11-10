@@ -70,7 +70,7 @@ namespace SimpleLeadership
         [DrawIf("enableDoctrines")]
         [Range(1f, 30f)]
         [Step(1f)]
-        public float interventionRaidCooldownDays = 1f;
+        public float interventionRaidCooldownDays = 8f;
 
         [Label("SL_MutualDefenseChance")]
         [DrawIf("enableDoctrines")]

@@ -50,7 +50,7 @@
       <li>SL_GraciousRepatriation</li>
     </conflictingDoctrines>
     <effects>
-      <li>Pawns will eliminate any downed colonist they can reach directly</li>
+      <li>Pawns will eliminate any downed enemy they can reach directly</li>
     </effects>
   </SimpleLeadership.DoctrineDef>
 

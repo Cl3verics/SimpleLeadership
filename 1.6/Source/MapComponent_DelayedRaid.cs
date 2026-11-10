@@ -49,6 +49,10 @@ namespace SimpleLeadership
                 if (Find.TickManager.TicksGame >= entry.fireTick)
                 {
                     scheduledRaids.RemoveAt(i);
+                    if (entry.tag == "Intervention")
+                    {
+                        WorldComponent_LeaderTracker.Instance.lastInterventionRaidTick = Find.TickManager.TicksGame;
+                    }
                     RaidContext.InterventionTargetFaction = entry.targetFaction;
                     try
                     {

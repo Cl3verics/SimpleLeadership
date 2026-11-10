@@ -49,7 +49,7 @@ namespace SimpleLeadership
             else
                 WorldComponent_LeaderTracker.Instance.lastRaidOrigin.Remove(parms.faction);
 
-            if (originSettlement != null)
+            if (originSettlement is not null && RaidContext.InterventionTargetFaction is null)
             {
                 if (originSettlement.IsInPowerEvent<PowerStruggle>())
                 {
