@@ -36,7 +36,7 @@ namespace SimpleLeadership
                             continue;
                         if (tracker.lastMutualDefenseRaidTick.TryGetValue(faction, out var lastTick) && Find.TickManager.TicksGame - lastTick < cooldownTicks)
                             continue;
-                        if (IgnoranceIsBlissCompat.FactionInEligibleTechRange(faction) is false)
+                        if (ModCompatability.FactionInEligibleTechRange(faction) is false)
                             continue;
                         if (faction.HostileTo(Faction.OfPlayer) is false)
                         {
@@ -58,7 +58,7 @@ namespace SimpleLeadership
             if (mapParent is not Settlement settlement || settlement.HasMap is false)
                 return;
 
-            if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements) && settlement.Faction != null && settlement.Faction.HostileTo(Faction.OfPlayer) && IgnoranceIsBlissCompat.FactionInEligibleTechRange(settlement.Faction))
+            if (settlement.IsInPowerEvent(PowerEventDefOf.SL_Reinforcements) && settlement.Faction != null && settlement.Faction.HostileTo(Faction.OfPlayer) && ModCompatability.FactionInEligibleTechRange(settlement.Faction))
             {
                 var reinforceComp = settlement.Map.GetComponent<MapComponent_DelayedRaid>();
                 if (reinforceComp.HasScheduledTag(ReinforceRaidTag) is false)

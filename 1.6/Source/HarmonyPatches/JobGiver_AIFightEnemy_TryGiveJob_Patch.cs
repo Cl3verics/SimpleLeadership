@@ -12,7 +12,7 @@ namespace SimpleLeadership
 
         public static void Postfix(Pawn pawn, ref Job __result)
         {
-            if (pawn.Faction == null || pawn.Faction.HasDoctrine(PowerEventDefOf.SL_NoMercy) is false || pawn.HostileTo(Faction.OfPlayer) is false)
+            if (pawn.Faction == null || pawn.Faction.HasDoctrine(PowerEventDefOf.SL_NoMercy) is false)
                 return;
 
             var target = GenClosest.ClosestThingReachable(
@@ -22,7 +22,7 @@ namespace SimpleLeadership
                 PathEndMode.Touch,
                 TraverseParms.For(pawn),
                 SimpleLeadershipMod.Settings.noMercyExecutionRange,
-                t => t is Pawn p && p.HostileTo(pawn) && p.RaceProps.Humanlike && p.Downed && pawn.CanReserveAndReach(p, PathEndMode.Touch, Danger.Deadly));
+                t => t is Pawn p && p.HostileTo(pawn) && p.Downed && pawn.CanReserveAndReach(p, PathEndMode.Touch, Danger.Deadly));
 
             if (target is Pawn downedPawn && (__result == null || pawn.Position.DistanceTo(downedPawn.Position) <= ExecuteAdjacencyRadius))
             {

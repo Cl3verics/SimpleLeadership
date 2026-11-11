@@ -76,7 +76,7 @@
   <SL_HitAndRunRegrouping>{0} forces are retreating to regroup for another assault!</SL_HitAndRunRegrouping>
   <SL_ScorchedEarthTriggered>{0} defenders are destroying valuable facilities as they abandon the base!</SL_ScorchedEarthTriggered>
   <SL_InterventionRaidLetterLabel>Intervention raid</SL_InterventionRaidLetterLabel>
-  <SL_InterventionRaidLetterBody>{0} has dispatched a raid to eliminate the visiting {1} caravan!</SL_InterventionRaidLetterBody>
+  <SL_InterventionRaidLetterBody>{0} has dispatched a raid to eliminate the visiting {1} caravan!\n\n{0} and {1} are at war. Under their Intervention doctrine, {0} will pursue their enemies anywhere, striking {1} even while they are guests in your colony. {0} is hostile to your faction as well.</SL_InterventionRaidLetterBody>
   <SL_MutualDefenseLetterLabel>Retaliation raid</SL_MutualDefenseLetterLabel>
   <SL_MutualDefenseLetterBody>{0} has declared a retaliation raid following your aggression against their allies, {1}!</SL_MutualDefenseLetterBody>
   <SL_BasesUnderLeader>Bases under this leader:</SL_BasesUnderLeader>

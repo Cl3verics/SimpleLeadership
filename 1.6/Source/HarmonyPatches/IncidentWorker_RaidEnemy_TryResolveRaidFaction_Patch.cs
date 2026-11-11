@@ -26,7 +26,7 @@ namespace SimpleLeadership
             if (Rand.Value >= SimpleLeadershipMod.Settings.distanceWeight)
                 return;
             ChosenOriginSettlement = Find.WorldObjects.Settlements
-                .Where(s => s.Faction != null && s.Faction.IsPlayer is false && s.Spawned && s.Tile.Valid && IgnoranceIsBlissCompat.FactionInEligibleTechRange(s.Faction))
+                .Where(s => s.Faction != null && s.Faction.IsPlayer is false && s.Spawned && s.Tile.Valid && ModCompatability.FactionInEligibleTechRange(s.Faction))
                 .MinBy(s => Utils.SafeApproxDistanceInTiles(s.Tile, targetTile));
         }
 
