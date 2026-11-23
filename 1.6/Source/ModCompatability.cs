@@ -16,7 +16,7 @@ namespace SimpleLeadership
         {
             if (IsActive)
             {
-                var baseType = AccessTools.TypeByName("DIgnoranceIsBliss.IgnoranceBase");
+                var baseType = AccessTools.TypeByName("DIgnoranceIsBliss.Core_Patches.IgnoranceBase");
                 EligibilityMethod = AccessTools.Method(baseType, "FactionInEligibleTechRange", new[] { typeof(Faction) });
             }
             else if (EraActive)
