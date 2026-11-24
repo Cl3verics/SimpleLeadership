@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using HarmonyLib;
 using RimWorld;
@@ -28,8 +29,18 @@ namespace SimpleLeadership
 
         public static bool FactionInEligibleTechRange(Faction faction)
         {
-            if (IsActive) return (bool)EligibilityMethod.Invoke(null, new object[] { faction });
-            if (EraActive) return (bool)EraEligibilityMethod.Invoke(null, new object[] { faction });
+            if (faction != null)
+            {
+                try
+                {
+                    if (IsActive) return (bool)EligibilityMethod.Invoke(null, new object[] { faction });
+                    if (EraActive) return (bool)EraEligibilityMethod.Invoke(null, new object[] { faction });
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("[SimpleLeadership] Error in FactionInEligibleTechRange: " + ex.ToString());
+                }
+            }
             return true;
         }
     }
